@@ -1,0 +1,2521 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Johnny Chabin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@900&family=Roboto&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style id="mobilestyle">
+      .title{
+        font-size: 80px;
+      }
+      .ptitle{
+        font-size: 60px;
+        padding-right: calc(4vmin + 65px);
+      }
+      #cproj{
+        font-size: 40px;
+        height: 60px;
+        width: 60px;
+        line-height: 60px;
+        border: 2.5px solid var(--accent1);
+      }
+      .article{
+        font-size: 16px;
+      }
+      #article{
+        padding-left: 20px;
+        padding-right: 20px;
+        width: 100vw;
+        left: 0;
+      }
+      #articlecontrols{
+        padding-top: 5px;
+        right: 10px;
+      }
+      #articletext{
+        margin-bottom: 100px;
+      }
+      .column{
+        margin-bottom: 100px;
+      }
+      .text{
+        font-size: 20px;
+        background: rgba(0, 0, 0, 0.5);
+      }
+      .button{
+        font-size: 22px;
+      }
+      #bio{
+        margin: 3vmin;
+        width: unset;
+        font-size: 16px;
+        position: unset;
+        margin-bottom: 100px;
+      }
+      .slide{
+        overflow-y: scroll;
+      }
+      .ph{
+        font-size: 20px;
+      }
+      .pd{
+        font-size: 16px;
+      }
+      body{
+        cursor: auto;
+      }
+      .button{
+        cursor: pointer;
+      }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/sunburst.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <script>
+const projectsdata = [
+  {
+    "src": "thmb_0",
+    "title": "Asteroids",
+    "desc": "Local multiplayer versus shooter",
+    "tags": ["HTML", "JavaScript", "Canvas", "Firebase"],
+    "git": "https://github.com/jchabin/asteroids",
+    "link": "https://jchabin.github.io/asteroids",
+    "article":
+    `
+    <h1>You should play this game</h1>
+    <div class="adesc">It's out of this world...?</div><br/>
+    I'll give you a pretty detailed rundown here of everything that went into
+    this, but I recommend you play the game for yourself first. You'll need a
+    PC/Laptop to act as the "main screen," and every player (minimum of two)
+    needs their own mobile device to use as a controller.
+    <br/><br/>
+    Check it out <a href="https://jchabin.github.io/asteroids" target="_blank">here!</a>
+    <br/><br/>
+    <img class="aimage" src="images/asteroids.webp">
+    <br/><br/>
+    <h1>Background</h1><br/>
+    I miss local multiplayer games, a lot. Obviously online games are better,
+    logistically, but local multiplayer games are just fun in a way that can't
+    be imitated by a Discord call. Online gaming has almost entirely replaced
+    it, but there's still a few significant outliers, namely Jackbox Games,
+    which do a fantastic job of using mobile devices instead of controllers. But
+    I've always felt this was also these games' biggest weakness - they're
+    limited to the types of inputs most comfortable on a small touchscreen.
+    <br/><br/>
+    This was my starting point for this project, to try and push what kinds of
+    inputs are comfortable for a mobile device: what kinds of inputs are
+    feasible for a web app, and what kind of game could be constructed to fit
+    such a strict constraint?
+    <br/><br/>
+    My concept was primarily to use a single button and a single joystick (one
+    input for each thumb), and to construct a game out of that. The joystick
+    ended up controlling both movement and direction/aiming, and the single
+    button corresponds to shooting, the single other interaction in the game.
+    The first iteration of this game was actually entirely different - it was a
+    platformer/fighting game with destroyable platforms, although when testing
+    it always felt frustrating and finnicky due to some interent difficulty in
+    using mobile controllers (The basic gameplay concept, ignoring the mobile
+    controller element, was surprisingly similar to
+    <a href="https://store.steampowered.com/app/1557740/ROUNDS/" target="_blank">Rounds by Landfall</a>
+    a few years later!).
+    <br/><br/>
+    <img class="aimage" src="images/old_asteroids_wip.webp">
+    <div class="adesc">
+    Those two onscreen controllers were running in separate tabs. The coolest
+    feature of this demo that I left behind was that you could use multiple
+    computers as the "game screen," and players could travel freely between
+    them. That's something I'd still love to work into a new project...
+    </div><br/>
+    A second pass at this concept resulted in this asteroids-esque game, where
+    difficult controls were made up for by having a wide-open play area, and any
+    latency is almost unnoticable due to the drifty zero-gravity gameplay!
+    <br/><br/>
+    <h1>Making the game</h1><br/>
+    I decided on Github Pages for static hosting, Firebase Realtime Database for
+    all networking, and JS Canvas for rendering the game itself, mostly because
+    these are all tools I was already familiar with. But there was an issue I
+    was already anticipating, which was "how the hell do I make a mobile
+    controller inside a web app?"
+    <br/><br/>
+    <pre><code class="language-javascript">// This is a heavily abbreviated version of the real code!
+
+function startPlayer(){
+  // First I set up the canvas, and width/height variables. There's a reason I
+  // keep variables for width/height, they'll be useful again soon.
+  var dpi = window.devicePixelRatio;
+  var width = window.innerWidth * dpi;
+  var height = window.innerHeight * dpi;
+  var sideways = true;
+  var c = document.getElementById("c");
+  var ctx = c.getContext("2d");
+
+  // This "buttons" object lets me store the current status of the controller in
+  // a place where both the user input handlers and the update function have
+  // access to it.
+
+  // The handlers set this value based on user inputs, and the update function
+  // uses buttons to draw the controller in its current state, and to update
+  // the server/PC on what buttons are being pressed.
+  var buttons = {
+    A: false,
+    Joystick: [0, 0]
+  }
+
+  // Here's that update function! Running on animation frames, as this
+  // function renders the controller itself.
+  function update(){
+    requestAnimationFrame(update);
+
+    // These two statements just check for the screen changing size (either
+    // by resizing the window, or by rotating the device). I don't think
+    // it's even possible to freely resize the screen on mobile, but it's
+    // handled anyway!
+
+    // Remember how I stored "width" and "height" earlier? That's so I could
+    // check it here, to see if the actual device size is different from the
+    // size it was when I last setup the canvas and stuff.
+    if(window.innerWidth < window.innerHeight && (!sideways || window.innerHeight * dpi != width)){
+      sideways = true;
+      width = window.innerHeight * dpi;
+      height = window.innerWidth * dpi;
+      c.height = height;
+      c.width = width;
+
+      // This "side" class literally just rotates the canavs 90 degress with
+      // a CSS transform. All of the touch input data has to be modified a
+      // little to handle this.
+      c.className = "side";
+    }
+    if(window.innerWidth > window.innerHeight && (sideways || window.innerHeight * dpi != height)){
+      sideways = false;
+      height = window.innerHeight * dpi;
+      width = window.innerWidth * dpi;
+      c.height = height;
+      c.width = width;
+      c.className = "";
+    }
+
+    // Skipping a few lines that paint the controller itself...
+    // Just uses simple canvas shapes.
+
+    // I never showed where this was instantiated, but "me" is a reference
+    // to all data the player client needs to know about itself, and
+    // me.data is the object that contains all data it needs to synchronize
+    // with the server/PC.
+
+    // The server also stores all players with this same object format, with
+    // all players being an object in "players" using a key of the player's
+    // UUID. The server/PC also have data the player client doesn't, such as
+    // positional position about the players ship.
+    me.data.mov = {
+      x: buttons.Joystick[0],
+      y: buttons.Joystick[1]
+    }
+    me.ref.set(me.data);
+
+    // A second Firebase call to create a new bullet if the "A" button is
+    // being pressed.
+    if(buttons.A){
+      buttons.A = false;
+      database.ref(code + "/bullets").push().set({
+        s: me.ref.path.pieces_[2]
+      });
+    }
+  }
+  update();
+
+  c.addEventListener("touchstart", function(e){
+    // Prevents being able to scroll/zoom around on the page.
+    e.preventDefault();
+    for(var i = 0; i < e.changedTouches.length; i++){
+      t = e.changedTouches[i];
+      var x = t.clientX, y = t.clientY;
+
+      // Simple processing to handle the sideways screen
+      if(sideways){
+        var temp = x
+        x = width - y;
+        y = temp;
+      }
+
+      // This is how the game distinguishes between fingers, and tracks
+      // which fingers press which button.
+
+      // First it checks if the finger is near enough to the button
+      // (generous enough to be fun!), and using the Touch.identifier, which
+      // is unique for each time a finger is pressed and held, assigns that
+      // Touch a value to indicate whether it's using the (J)oystick or the
+      // (A)ction button.
+
+      // This means only one finger can use an input at once, and a single
+      // Touch can't hit more than one input. This is essential for controls
+      // that feel intuitive on mobile.
+      touchArr[t.identifier] = "";
+      if(Math.hypot(x - width * 3 / 4, y - height / 2) < height * 0.4)
+        if(!arrCont("J"))
+          touchArr[t.identifier] = "J";
+      if(touchArr[t.identifier] == "" && Math.hypot(x - width / 4, y - height / 2) < height * 0.5)
+        if(!arrCont("A")){
+          touchArr[t.identifier] = "A";
+          buttons.A = true;
+        }
+    }
+    // Sneaky trick here, the finger's position on the joystick isn't
+    // handled until the "touchmove" event, so the "touchdown" event just
+    // calls that handler manually.
+    tMove(e);
+  });
+
+  function tMove(e){
+    e.preventDefault();
+    for(var i = 0; i < e.changedTouches.length; i++){
+      t = e.changedTouches[i];
+      if(touchArr[t.identifier] == "J"){
+        var x = t.clientX, y = t.clientY;
+        if(sideways){
+          var temp = x
+          x = width - y;
+          y = temp;
+        }
+        // "po" stores the position of the finger, proportional to the size
+        // and position of the Joystick.
+        var po = [(x - width * 3 / 4) / height * 4, (y - height / 2) / height * 4];
+
+        // "po" is normalized to prevent reaching outside the Joystick.
+        var l = Math.hypot(po[0], po[1]);
+        if(l > 1)
+          po = [po[0] / l, po[1] / l];
+        buttons.Joystick = po;
+      }
+    }
+  };
+
+  c.addEventListener("touchmove", tMove);
+
+  // Super simple code here, when you lift your finger, it resets any
+  // buttons associated with that Touch.
+  c.addEventListener("touchend", function(e){
+    for(var i = 0; i < e.changedTouches.length; i++){
+      t = e.changedTouches[i];
+      if(touchArr[t.identifier] == "A")
+        buttons.A = false;
+      if(touchArr[t.identifier] == "J")
+        buttons.Joystick = [0, 0];
+      delete touchArr[t.identifier];
+    }
+  });
+}</code></pre>
+    <br/>
+    Getting this working was kind of a mess, with a lot of issues related to
+    finger position not working on rotated screens, having issues with fingers
+    accidentally scrolling and zooming, some issues with distinguishing fingers
+    from each other, and some quality-of-life features I had to add, such as
+    making the button "hitbox" extremely generous.
+    <br/><br/>
+    I also mentioned (briefly) how the controller and PC speak to each other -
+    using Firebase Realtime Database, the controller sends <em>only</em> the
+    joystick position and A-button presses. The entire game is simulated and run
+    on the PC, not on the controller, which both limits the amount of data sent
+    between clients, and acts as a simple anticheat.
+    <br/><br/>
+    <h1>Other cool things about this</h1><br/>
+    <div class="imgcenter"><img class="simg" src="images/asteroids_clip.gif"></div>
+    <div class="adesc">
+    Look at how those dots curl and form a "flowery" pattern!
+    </div><br/>
+    In the past, I've used similar approaches for particle effects as I did in
+    this project (See <a href="https://scratch.mit.edu/projects/32431594/" target="_blank">this game</a>
+    I made almost a decade ago!), but I wasn't happy with just spawning a bunch
+    of dots/rectangles and having them travel in a straight line (despite that
+    being what should actually happen in low-gravity). To combat this, I gave
+    every particle a "spin" that would give explosions a very pretty swirling
+    pattern.
+    <br/><br/>
+    <h1></h1><br/>
+    <img class="aimage" src="images/asteroids_song.webp">
+    <div class="adesc">
+    Zoomed-out look at the timeline. Not sure why I bothered including this, as
+    it doesn't actually demonstrate anything interesting, I just like the way
+    the page looks better when broken up by images like this.
+    </div><br/>
+    I've never made my own soundtrack for a game before this one, and I'm pretty
+    happy with the result. Both of the songs used have an introduction sound
+    file, and a looping sound file. One fun detail is that the first three notes
+    of the main soundtrack are in perfect sync with the countdown - although I
+    don't think the effect was as cool as I thought it would be. All other sound
+    effects - including explosions, and the melody that plays when you hit
+    "Start," were also made by me, for this game.
+    <br/><br/>
+    <h1></h1><br/>
+    <div class="imgcenter"><img class="simg" src="images/asteroids_clip_2.gif"></div>
+    <div class="adesc">
+    Look how those colors spin!
+    </div><br/>
+    The color select wheel has momentum. You can just spin it... and it will be
+    synchronized with the PC/screen when spun!
+    <br/><br/>
+    <h1></h1><br/>
+    Although only sixteen players' names can be displayed, I chose to never
+    implement an actual player limit... this game benefits greatly from the
+    chaos that derives from floaty combat, and going beyond sixteen players
+    contributes to that experience :)
+    <br/><br/>
+    <h1>Conclusion</h1><br/>
+    I'm really happy with how this ended up. It feels like a very complete
+    product - I can show it off in its current state, without disclaimer.
+    Everyone else seems to enjoy it, and it seems like the skills required to
+    be competetive in it can be learned in only a few minutes.
+    `
+  },
+  {
+    "src": "thmb_1",
+    "title": "Custom Fractal Renderer",
+    "desc": "3D Renderer that beautifully renders complex shapes with SDFs",
+    "tags": ["OpenGL", "C"],
+    "article":
+    `
+    <h1>Circle. Square. Triangle.</h1>
+    <div class="adesc">We could do with some more poison!</div><br/>
+    <img class="aimage" src="images/fractal0.webp">
+    <br/><br/>
+    This is possibly my longest-running project (I can't tell you for sure,
+    because ShaderToy only displays dates on published projects). I can only say
+    with confidence that I started this in 2018 or earlier. I've been
+    continuously modifying this code since, making small changes, improvements,
+    and new features.
+    <br/><br/>
+    If you'd like to see more of this art, you can check out <a href="/museum" target="_blank">The Museum.</a>
+    <br/><br/>
+    <h1>How does it work?</h1><br/>
+    I started with the <a href="https://iquilezles.org/articles/menger/" target="_blank">famous Inigo Quilez fractal article</a>
+    as a reference for making my own ray-marched fractal, and then began to
+    rewrite it to gives rays multiple bounces, to make these bounces random, and
+    to combine multiple rendered frames together to show the average value for
+    each pixel.
+    <br/><br/>
+    <img class="aimage" src="images/fractal1.webp">
+    <div class="adesc">
+    One of the first renders I ever made. Clearly has some graphical artifacts,
+    only has two materials (one being shiny, one being the light source),
+    and has no sense of color, all light is calculated as a single channel.
+    Regardless, I still think it's super cool.
+    </div><br/>
+    I referenced how path/raymarchers work above, so to explain: I define a
+    Signed Distance Field (SDF) such that, for any point in 3D space, I can run
+    a function to get the distance to the nearest object, and if I'm already
+    inside an object, that value will be negative. With this, I can send out a
+    ray from each pixel on the screen (similar to raytracing), but instead of
+    stepping a small, constant, distance until hitting an object, I can safely
+    step whatever value was returned from the SDF. Raymarchers and pathmarchers
+    diverge here - I could return based on the first object I hit, or I could
+    "bounce" the ray off of the object. If I bounce enough times in enough
+    directions, I get a very realistic render.
+    <br/><br/>
+    A fantastic property of SDFs is their ability to repeat in space for free,
+    by simply using a modulus operation on the inputted 3D position, which is
+    something I took advantage of here. There are only four shapes in this image
+    - one positive sphere, two sphere holes, and a cube light source.
+    <br/><br/>
+    All of these early images were made in my school's computer lab, usually
+    during a lunch break, or after I was finished with my classwork. As
+    mentioned earlier, this is in ShaderToy, but luckily I moved into a regular
+    OpenGL environment eventually.
+    <br/><br/>
+    <img class="aimage" src="images/fractal2.webp">
+    <div class="adesc">
+    Another very old render, this time with three color channels (RGB), a matte
+    marterial, a skybox, and some depth-of-field added. All of these features
+    have gone through significant redesigns since, but this is still a very fun
+    render to me.
+    </div><br/>
+    This one shows off a couple of cool features. Colors were impemented in the
+    most naive way possible - I keep a running multiple of the colors that each
+    path hits, and if it finally reaches a light source, the value of that light
+    is also multipled by that color. Because I'm using component-wise
+    multiplication for this step, it gives me a very nice and easy
+    implementation of multiple colors.
+    <br/><br/>
+    The matte material simply reflects the ray in any direction that would have
+    a positive dot product with the normal. All directions are equally weighted,
+    although I since improved it to be more accurate to the Lambertian
+    reflectance model.
+    <br/><br/>
+    If it wasn't made clear by these explanations, all of the implementations,
+    and many of the equations used, are entirely made up based on the property
+    of "Yeah, that looks right." This often leads to big missteps, like the
+    depth-of-field algorithm I used in early renders. I naively assumed that I
+    could model DOF by jittering the ray in space as it got further away from
+    the focal point - however, this resulted in many cases where it would phase
+    into objects and leave behind a black dot, or cases where it could phase
+    through distant objects, making them slightly transparent. Even with those
+    issues fixed, it would just be a poor distance blur function, and not behave
+    simialrly to actaual DOF. This went through a lot of later iterations -
+    first by adding screen-space noise to the ray's position and direction that
+    would converge at the focal point, then making that noise shaped like an
+    n-sided lens, and then by making that same noise converge on a focal plane
+    instead, which made much more beautiful renders.
+    <br/><br/>
+    <img class="aimage" src="images/fractal3.webp">
+    <div class="adesc">
+    The oldest "true fractal" that I still have a photo of. They now have some
+    very nice shadows, and you can clearly see the occlusion that comes for free
+    with pathtracing.
+    </div><br/>
+    The fractals themselves are actually very simple to generate. In the same
+    way I can use a modulus on the 3D position to make space loop, I can
+    repeatedly scale and reflect space to make a fractal. To render a fractal
+    correctly, this repetetive step should run an infinite number of times - but
+    we haven't got all day. Because every iteration makes smaller and smaller
+    details, only a relatively small number of iterations are required for any
+    additional iterations to be smaller than a pixel.
+    <br/><br/>
+    <img class="aimage" src="images/fractal4.webp">
+    <div class="adesc">
+    A much better-shaded fractal, showing off a basic volumetric system.
+    </div><br/>
+    Volumetrics were another thing that only shows up rarely in my renders, as
+    it tends to have pretty noticable artifacts, runs very slow, and doesn't
+    usually look all that great. But in this case, I think it looks great. If
+    you look carefully on the "overhanging" parts of the shape you can see it
+    does actually cast shadows as expected.
+    <br/><br/>
+    Since then I've re-implemented volumentrics more efficiently and with better
+    accuracy, such that it no longer creates large bands!
+    <br/><br/>
+    <h1>Leaving ShaderToy</h1><br/>
+    I like ShaderToy, but it's slower than running natively, and it's lacking a
+    lot of features that are available in OpenGL. For a final project in my
+    graphics class, I took this existing shader and implemented it in OpenGL
+    using C. As part of this migration, I added some additional features, like
+    an actual GUI! In the spirit of DIY-ing everything in this project so far,
+    I wrote theb UI with my own data types and classes, and rendered it myself
+    with primitives in OpenGL.
+    <br/><br/>
+    <img class="aimage" src="images/fractal5.webp">
+    <div class="adesc">
+    Showing off the UI. On the right, there are settings for how many recursions
+    to make while rendering, and settings for how to fold and rotate the shape
+    every iteration. Material settings, shape settings, lighting settings, and
+    camera settings are elsewhere in the UI.
+    </div><br/>
+    A fun aspect of this project was setting up the UI to actually control
+    variables in the shader. Most of them are just uniforms, but a few are more
+    efficient to define as preprocessor directives. My wonderful solution is to
+    use sprintf to set the variables before compiling the shader:
+    <br/><br/>
+    <pre><code class="language-c">#define MAXSTEPS %d
+#define MAXBOUNCES %d
+#define SHADOWS %d
+
+#define PREVIEW %d
+
+#define FOLDITER %d
+#define SDFITER %d
+
+#define SHAPETYPE %d
+
+#define CONVEXSKIP %d</code></pre>
+    <br/>
+    While I doubt this is the best solution, it is definitely the funniest
+    solution.
+    <br/><br/>
+    <img class="aimage" src="rawimages/fractal6.png">
+    <div class="adesc">
+    It's probably too small to see on your screen, but this image only uses one
+    bit per color channel. With some nice dithering, it can still create a great
+    illusion of deeper color!
+    </div><br/>
+    Another fun feature to implement here was some basic dithering! Now that I'm
+    in plain OpenGL, I can render with a much greater color depth than I can
+    even see on my screen. Because this data is eventually lost eventually, I
+    use a post-processing shader to test the fractional component of each color
+    channel against a blue noise texture to decide which way to round the color.
+    This simple check does a great job of removing color banding, but it also
+    allows me to render in an even smaller color space, usually just for fun.
+    <br/><br/>
+    There's only so many individual aspects of this project I can point out
+    while still believing that any person would actually read it, much less find
+    it interesting. So I'll end it here with a short video I made by manually
+    rendering each frame!
+    <br/><br/>
+    <img class="aimage" src="images/fractalvid.gif">
+    <div class="adesc">
+    Notice the slight motion blur? There's technically no "motion" in this
+    scene, as the shapes are being scaled, not translated nor rotated - but I
+    got that effect by randomly jittering the scale a subframe amount for each
+    ray.
+    </div>
+    `
+  },
+  {
+    "src": "thmb_2",
+    "title": "Online Racing Game",
+    "desc": "Tiny multiplayer racing game",
+    "tags": ["HTML", "JavaScript", "THREE.js", "Firebase", "VR"],
+    "git": "https://github.com/jchabin/cars",
+    "link": "https://jchabin.github.io/cars",
+    "article":
+    `
+    <h1>Online Racing Game!</h1>
+    <div class="adesc">I'm not great with names.</div><br/>
+    <img class="aimage" src="images/cars.webp">
+    <br/><br/>
+    This is definitely not my most impressive project. It's kinda fun, as was my
+    intention, but the graphics are awful, the gameplay is bizarre, the font and
+    layout are an assault on the eyes, the physics are barely playable, and
+    several of its best features have broken over time. But there's a few things
+    here I want to talk about, if you'll bear with me.
+    <br/><br/>
+    First, I made this when I was 15. I was supposed to be studying for finals,
+    I got bored, and made this game to play with my friends - they were more
+    studious than me, but everyone loves a brand new video game. We all had a
+    lot of fun with it, so I started adding new features! Early versions
+    redesigned the track separate times, eventually adding trees and arrows, I
+    reworked the physics through multiple iterations, eventually settling on the
+    <em>least</em> buggy and unpredictable version. I began adding new features,
+    like tilt-to-steer support for mobile, support for VR with Google Cardboard,
+    a help menu, and even a track editor!
+    <br/><br/>
+    I don't know exactly when this happened, but people started to play this
+    game without me needing to suggest it. One of my best friends would spend
+    hours designing massive elaborate octagonal mazes to race on, every
+    gaming/tech club at my high school began to use the game for tournaments and
+    to show off an example of "projects created my club members." Through some
+    unknown mechanism, it began to attract an even younger audience, too. I've
+    had to make some upgrades to the game to be able to have multiple servers to
+    handle more players, now with a total of six. I set up basic pseudonymous
+    authentication to gather some data on player count, and to prevent my
+    servers from being used on other domains than my own.
+    <br/><br/>
+    <h1>Let's check those metrics</h1><br/>
+    <img class="aimage" src="images/cars_stats_0.webp">
+    <div class="adesc">
+    Screenshot of total unique users on the Firebase Authentication console. I
+    set up this authentication system about a year ago, it now shows a total of
+    55 THOUSAND unique users!
+    </div><br/>
+    My Firebase Authentication console shows more than 55 thousand unique users
+    created over the last year. That's absolutely insane, and I can't fathom how
+    such a silly game gathered such a large audience. I have some doubts about
+    the reliability of this number, which I'll explore later, but let's check
+    some more data first.
+    <br/><br/>
+    <img class="aimage" src="images/cars_stats_1.webp">
+    <div class="adesc">
+    Cumulative unique active users over the last day.
+    </div><br/>
+    Daily unique users tends to hover around 300-600, <em>on weekdays</em>. I
+    think this is interesting enough to focus on - I strongly suspect this game
+    is primarily being played during school, because github.io domains are
+    rarely blocked on school WiFi. Morally, I'm somewhat conflicted on this - on
+    one hand, I'm contributing to distracting the youth, but on the other hand,
+    I don't really care.
+    <br/><br/>
+    <img class="aimage" src="images/cars_stats_2.webp">
+    <div class="adesc">
+    Simultaneous users on one server over the last month.
+    </div><br/>
+    Depending on the month and the server, I've seen simultaneous users get as
+    high as 60-70, but it tends to hover around 20-50. The reason the graph
+    seems to randomly flatten in the middle is because that server was swapped
+    for another one during that period, which happens automatically. From
+    looking at the data closely, I can confirm that this is <em>not</em> just
+    measuring "unique users per hour," this is actually a measure of maximum
+    simultaneous connections during that hour, and is used for billing.
+    <br/><br/>
+    <h1>Development</h1><br/>
+    This was written in JavaScript with THREE.js. No models were actually
+    created for this game - it just uses various primitive shapes which are
+    rotated and scaled to form the geometry on screen. As the map data stores
+    walls by start/end point, I just do some basic trigonometry to make boxes
+    connect to each other and form the walls of the track.
+    <br/><br/>
+    The stripey pattern on the ground was not present in earlier versions of the
+    game, and in fact remains as the only actual texture in the game. I added it
+    when I built the VR mode, as it made the ground more visually distinct from
+    itself, and made the perception of depth much more convincing.
+    <br/><br/>
+    <img class="aimage" src="images/cars_game_0.webp">
+    <br/><br/>
+    I keep mentioning VR mode, but unfortunately this is a dead feature. Back
+    when I created this, the recommened way to make a VR app in THREE.js was
+    using a THREE.DeviceOrientationControls to track head rotation, and a
+    SteroEffect on the camera to create the necesary parallax. When viewed
+    through a Google Cardboard, it was a functioning demo. The car would
+    accelerate automatically, you would tilt your head on the Z-axis to steer,
+    and although fun, it was nauseating and ridiculous to actually use.
+    <br/><br/>
+    But we aren't allowed to have fun any more. DeviceOrientationControls are
+    gone, SteroEffect is not recommened for VR usage, detection of device
+    orientation no longer works on most mobile devices due to a host of
+    permissions issues, and Google Cardboard is discontinued. I had even
+    modified my own Cardboard with a custom headstrap (also made out of
+    cardboard). The feature is unfortunately gone, and it seems that nobody but
+    me misses it, or even remembers it existed - and, with it, tilt steering on
+    mobile was broken as well.
+    <br/><br/>
+    I also made a basic track editor, and luckily, this one still works. It's
+    hidden under the gear, by clicking the giant pencil button. But the really
+    cool part isn't actually on the track editor page at all - once you export
+    the map, you can press Ctrl+I to import it into the main game, and any
+    player who joins your game will also get to play on the same map with you! I
+    can confirm, by viewing the leftovers from previous games, that players ARE
+    actually using this feature.
+    <br/><br/>
+    Since then, I've just been maintaining the servers, to ensure that the base
+    intended experience is still functional. I've had some messages come in from
+    players requesting new features, but I am choosing to not further develop
+    this, for reasons that I think I explained well in
+    <a href="https://github.com/jchabin/cars/issues/2#issuecomment-1773661977" target="_blank">this thread</a>.
+    <br/><br/>
+    <img class="aimage" src="rawimages/cars_message.png">
+    <br/><br/>
+    The most important thing I said there was that I have spent $0 on this game,
+    and I have made $0 back from it. I am skirting the free limits for my
+    servers, I am using free hosting, and due to using no game engine and no
+    real assets, the project was free to make as well. This is the philosophy
+    with which I approach almost everything I make, but I think this game
+    embodies it better than any other.
+    <br/><br/>
+    <h1>Validating my metrics</h1><br/>
+    This is going to be a section full of very rough approximations, and pretty
+    big leaps in logic. The data I have access to is likely inaccurrate, but
+    should be inaccurate in a predictable way, due to how few moving parts there
+    are here.
+    <br/><br/>
+    50 thousand is a lot. The first question you should ask is "how long do
+    anonymous Firebase accounts even last?" Based on multiple sources, it should
+    last indefinitely.
+    <br/><br/>
+    <div class="aquote">"For a web application, the default behavior is to
+    persist a user's session even after the user closes the browser." -
+    <a href="https://firebase.google.com/docs/auth/web/auth-state-persistence" target="_blank">Firebase Docs</a>
+    </div><br/>
+    Although they do mention automatic cleanup as an option, I do not have this
+    enabled, and I can clearly see that accounts are not being deleted.
+    <br/><br/>
+    <div class="aquote">"These anonymous sessions can be configured to last
+    days, weeks, months, even years… until the user logs in with a permanent
+    login method or clears her browser cache." -
+    <a href="https://stackoverflow.com/a/47856621" target="_blank">Stack Overflow</a>
+    </div><br/>
+    This answer is corroborated by every other answer I see about Firebase
+    anonymous users on web. Unless my users are repeatedly clearing their
+    LocalStorage, I have no reason to believe the number of anonymous users is
+    fraudulent.
+    <br/><br/>
+    Let's consider my anecdotal experience. I recently got a new PC last
+    October, and when I check the creation time of my account, I get an expected
+    result.
+    <br/><br/>
+    <pre><code class="language-javascript">connectedS.auth().currentUser.metadata.creationTime
+'Sat, 14 Oct 2023 21:20:45 GMT'</code></pre><br/>
+    I am tempted to believe all of the statistics right now, but I still think
+    it needs more review. I had theorized earlier that my game was being played
+    primarily by students during school - maybe school WiFi does something weird
+    with the stored authentication tokens, or maybe school computers are
+    refusing to store those tokens due to some administrative setting, or maybe
+    each time a student logs in to a school computer, they have no local files
+    (or localStorage) that are saved to their account or to that computer?
+    <br/><br/>
+    Sadly, this last option seems plausible, but we can do some math. Looking at
+    all the anonymous accounts, I counted 219 accounts created over the last
+    day. Compare this to the 398 unique users reported today - about half of
+    those unique users were not new. If a user account was used today, but not
+    created today, they must have their localStorage token correctly set and
+    correctly saving. If we take <div class="amath">398 - 219 = 179</div>, and
+    add in a single user who repeatedly loaded the game and wiped their storage
+    219 times today, we get 180 real unique users as a lower bound for unique
+    users today. This is also a very pessimistic lower bound for annual unique
+    users.
+    <br/><br/>
+    Let's dive deeper. Re-using that $219$ users were created in a
+    single day, we can extrapolate that to a whole year with
+    <div class="amath">219 * 5 * 36 = 39420</div> (36 is the minimum required
+    weeks of school in most states). This implies that
+    <div class="amath">55181 - 39420 = 15761</div> users were signed in on
+    multiple days. While this is still a pretty poor lower bound, it's
+    definitely an improvement.
+    <br/><br/>
+    Let's dive deeper. 498 unique users is a pretty reasonable estimate for a
+    weekday - lets take <div class="amath">498 * 5 * 36 = 89640</div>. If the
+    498 unique users were only counting a relatively small number of actual
+    players who just had broken localStorage, we would expect for the annual
+    value to be equal to the sum of each days' daily value, but it's not! We can
+    say, with reasonable confidence, that a minimum of
+    <div class="amath">89640 - 55181 = 34459</div> accounts were successfully
+    signed in on two separate days. This doesn't necessarily mean they were all
+    unique - a user could have had their localStorage cleared after playing
+    on two separate days - but that is far less likely than that user having
+    their localStorage cleared after only a single day.
+    <br/><br/>
+    We now have three lower bounds, of varying accuracy. Personally, I have the
+    most confidence in the second bound of 15761 (assuming the data I have is at
+    all based in reality), and the only upper bound I have is that it cannot
+    possibly be more than 55181.
+    <br/><br/>
+    <h1>In conclusion?</h1><br/>
+    <img class="aimage" src="images/cars_stats_3.webp">
+    <br/><br/>
+    I feel like I made my point. There's not much that's super interesting in
+    this game, besides the fact that it has a pretty significant audience. It's
+    still fun to play around with, but it's definiely a project that I keep
+    around as a memento, not as something I'm especially proud of. So let me
+    help you make some more fun in this game, with my Secret Script (patent
+    pending). You can paste it into the console, or add "javascript:" at the
+    front to make it a bookmarklet, like I did. The code only works once you're
+    already in a game, whether you're hosting or not.
+    <br/><br/>
+    <pre><code class="language-javascript">var ra = prompt("Radius?"),
+  bo = prompt("Number of Bots?"),
+  name = prompt("Name of Bots?"),
+  bots = [],
+  time = 0;
+
+for(var i = 0; i < bo; i++)
+  bots.push(database.ref(code + "/players").push());
+
+function u(){
+  requestAnimationFrame(u);
+  time++;
+  for(var i = 0; i < bo; i++){
+    var angle = Math.PI * 2 * i / bo + time * 0.05;
+    bots[i].set({
+      checkpoint: 0,
+      color: Math.floor(Math.random() * 360),
+      dir: angle * 2,
+      lap: 0,
+      name: name,
+      steer: 0,
+      x: me.data.x + ra * Math.sin(angle),
+      xv: me.data.xv,
+      y: me.data.y + ra * Math.cos(angle),
+      yv: me.data.yv
+    });
+  }
+}
+
+u();</code></pre>
+    `
+  },
+  {
+    "src": "thmb_3",
+    "title": "Quantum Chess",
+    "desc": "Needlessly complicated version of chess",
+    "tags": ["HTML", "JavaScript", "Canvas"],
+    "git": "https://github.com/jchabin/chess",
+    "link": "https://jchabin.github.io/chess",
+    "article":
+    `
+    <h1>Quantum?</h1>
+    <div class="adesc">I hardly know 'em.</div><br/>
+    <img class="aimage" src="images/chess0.webp">
+    <br/><br/>
+    I'll be the first to admit that I'm not good at chess. I will consistently
+    lose against any person who knows how to play well. So, to even the playing
+    field, I made my own extra-complicated version of chess. This way, it takes
+    me significantly longer to lose.
+    <br/><br/>
+    I'm not the first person to make up a game called "Quantum Chess." I've seen
+    plenty of different concepts, but as far as I'm aware, none of them were the
+    same concept as mine (although I didn't check that closely).
+    <br/><br/>
+    If you open the game itself, there's a small description of how Quantum
+    Chess works on the left side. The basic concept is this: the pieces on the
+    board are shuffled, but neither the players nor the game itself know how
+    they are arranged. As the game is played, every action will retroactively
+    determine how the pieces must have been arranged in order for that move to
+    be possible. I titled the game "Quantum Chess" because I framed the multiple
+    possibilities of each piece as being a superposition of multiple pieces, and
+    the way pieces could cause each other to collapse into more well-defined
+    states as entanglement. Technically this has nothing to do with actual
+    quantum physics, but I've yet to see somebody who cares.
+    <br/><br/>
+    <h1>Algorithms</h1><br/>
+    The code behind this game is surprisingly interesting. The first part of the
+    implementation is making the chess game itself. I chose to internally refer
+    to all pieces by index, which allows me to do all logic and operations as
+    simple loops.
+    <br/><br/>
+    <pre><code class="language-javascript">// Definition for the Queen piece
+
+// The first two entries are the symbol and color for the Queen piece. The third
+// entry is a function that takes a reference to the board (2D array of pieces),
+// and the piece that is being moved, to get a set of all possible moves.
+
+["\\u265b", "#b93cf6", function(pieces, piece){
+  var ret = [], e, x = piece.x, y = piece.y;
+  var dirs = [[1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1], [0, -1], [1, -1]];
+  for(var i = 0; i < dirs.length; i++){
+    var n = 1;
+    while(isEmpty(pieces, x + dirs[i][0] * n, y + dirs[i][1] * n))
+      ret.push([x + dirs[i][0] * n, y + dirs[i][1] * n++]);
+    if((e = getPiece(pieces, x + dirs[i][0] * n, y + dirs[i][1] * n)) != -1 && pieces[e].team != piece.team)
+      ret.push([x + dirs[i][0] * n, y + dirs[i][1] * n]);
+  }
+  return ret;
+}],</code></pre><br/>
+    This makes the basic chess engine pretty easy to implement, I just need to
+    call that function to see what moves are allowed for the selected piece. It
+    becomes only slighly more complicated when dealing with a superposition of
+    pieces - because I store the possibilties of each piece as an array of
+    booleans, I can iterate through that array, and if it is a possibility, the
+    moves of that piece are displayed. When that piece is actually moved, it
+    adjusts the possibilities to only the pieces that could have made that move.
+    <br/><br/>
+    <img class="aimage" src="images/chess_clip0.gif">
+    <div class="adesc">Look how whenever a space is hovered-over, the piece
+    displayed is the set of all pieces that could have made that move.</div><br/>
+    But there's another side to this, which is that the game board still has the
+    same number of each piece. This can create cool complex interactions between
+    pieces, but an algorithm is needed to facilitate these interactions and
+    resolve conflicts as they come up.
+    <br/><br/>
+    <pre><code class="language-javascript">// This is the heart of the game. This calculates where conflicts would occur,
+// and forces pieces to collapse to avoid those conflicts. It tests collapsing
+// every possibility of each piece, and then greedily collapses the rest of the
+// board to determine if that possibility still works.
+
+// This function takes "p," which is the state of the board AFTER the last move.
+function recalc(p){
+
+  // Iterate through both teams
+  for(var t = 0; t < 2; t++){
+
+    // Gets the list of all pieces belonging to a team, then iterates that list.
+    var pieces = getPiecesOfTeam(p, t);
+    for(var i = 0; i < pieces.length; i++)
+
+      // Iterates througn the possibilities/options of each piece.
+      nloop: for(var n = 0; n < 6; n++){
+        if(pieces[i].options[n]){
+          // The logic here is slightly confusing. The possibilty for that piece
+          // is disabled, but will be enabled again if it is does not conflict.
+
+          pieces[i].options[n] = 0;
+          var pcl = clone(pieces); // Local duplicate of the board
+
+          // Collapses the piece being tested into the single possibility that
+          // is currently being tested.
+          for(var j = 0; j < 6; j++)
+            pcl[i].options[j] = n == j ? 1 : 0;
+
+          // Sums up the total number of pieces that contain each possibilty.
+          var countq = [0, 0, 0, 0, 0, 0];
+          for(var j = 0; j < pcl.length; j++)
+            for(var k = 0; k < 6; k++)
+              countq[k] += pcl[j].options[k];
+
+          // Checks for an edge case that occured in testing, is not expected to
+          // do anything in normal gameplay.
+          for(var j = 0; j < 6; j++)
+            if(countq[j] < piecesQuota[j])
+              continue nloop;
+
+          // Assigns the "score" property, and fills it in. It is used to
+          // determine an approximate confidence value for each piece - the
+          // pieces with the lowest score can safely be collapsed first, the
+          // pieces with higher scores should be delayed until more of the board
+          // is solved.
+
+          // This prioritization lets me use a simple greedy algorithm to
+          // collapse pieces, which means my algorithm can be run in real-time.
+          for(var j = 0; j < pcl.length; j++){
+            pcl[j].score = 0;
+            for(var k = 0; k < 6; k++)
+              pcl[j].score += pcl[j].options[k] * piecesQuota[k] / countq[k];
+          }
+
+          countq = [0, 0, 0, 0, 0, 0];
+          var cont = true;
+          while(cont){
+            cont = false;
+
+            // Just finds the lowest scored (most confident) piece that hasn't
+            // been collapsed yet.
+            var min = 1000;
+            var minj = -1;
+            for(var j = 0; j < pcl.length; j++){
+              if(pcl[j].score > 0 && pcl[j].score < min){
+                min = pcl[j].score;
+                minj = j;
+              }
+            }
+
+            // If a piece was found, it is collapsed. If not, the loop ends.
+            if(minj >= 0){
+              cont = true;
+              pcl[minj].score = -1;
+              var matchFound = false;
+              for(var j = 0; j < 6; j++)
+                if(pcl[minj].options[j] && countq[j] < piecesQuota[j]){
+                  countq[j]++;
+                  matchFound = true;
+                  break;
+                }
+
+              // In this case, no piece was found to satisfy the possibility
+              // being tested. The last line of nloop gets skipped, meaning the
+              // piece/possibility being tested is left deactivated!
+              if(!matchFound)
+                continue nloop;
+            }
+          }
+          pieces[i].options[n] = 1;
+        }
+      }
+  }
+}</code></pre><br/>
+    Let's look at that all working together to collapse multiple pieces in a
+    single move:
+    <br/><br/>
+    <img class="aimage" src="images/chess_clip1.gif">
+    <div class="adesc">Notice how white is able to change four of black's pieces
+    with this move - by capturing the bottom piece, that piece cannot be the
+    King, and therefore must have been the Queen instead. The three pieces
+    above, therefore, cannot be the Queen, so they are left as being
+    King/Bishop, and because all three possible kings are in check, black is now
+    in check.</div><br/>
+    While I did not use it as a reference, I later learned that my
+    implementation of this solver function was actually a specialized version of
+    the <a href="https://github.com/mxgmn/WaveFunctionCollapse" target="_blank">Wave Function Collapse</a>
+    Algorithm, with default coefficients set by the current state of the board.
+    The score value I determined is an approximation of Shannon entropy, as used
+    in Wave Function Collapse. Their algorithm actually points out a notable
+    problem I've experienced:
+    <br/><br/>
+    <div class="aquote">
+    It may happen that during propagation all the coefficients for a certain
+    pixel become zero. That means that the algorithm has run into a
+    contradiction and can not continue. The problem of determining whether a
+    certain bitmap allows other nontrivial bitmaps satisfying condition (C1) is
+    NP-hard, so it's impossible to create a fast solution that always finishes.
+    In practice, however, the algorithm runs into contradictions surprisingly
+    rarely.</div><br/>
+    While I still haven't determined a consistent way of reproducing this error,
+    I have rarely seen in gameplay that some states will collapse randomly.
+    These randomly collapsing states are <em>not</em> correct, and the game is
+    removing some valid options by doing so. What's happening here is that the
+    repeated collapsing alorgithm that I call for every piece and possibility
+    gets unlucky, and is unable to find a solution, even when one should exist.
+    The authors of Wave Funcion Collapse claim the true solution for this is
+    NP-Hard, and it would be in my implementation, too, as I'd have to check
+    multiple possibilities for each piece, which exponentially increases the
+    compute time. There could be an easier solution, though, which is to improve
+    my scoring function to better prioritize pieces, although I am yet to find
+    one that eliminates the error in my testing. This is something I hope to
+    fix, but I don't have much confidence.
+    <br/><br/>
+    <h1>Conclusion</h1><br/>
+    This is a game I like to show off to people who are very good at chess,
+    because they're usually the biggest fans of needlessly complicated versions
+    of chess. I've considered making more games like this, because I found it
+    really fun to develop, I liked solving the complexities created by this
+    project, but I'm sure what other ideas would actually end up working as well
+    as this one did. Keep your eyes open for some more projects that are
+    conceptually similar.
+    `
+  },
+  {
+    "src": "thmb_4",
+    "title": "LAN Phone Controllers",
+    "desc": "Simple web app to use phones as XInput Gamepads",
+    "tags": ["NodeJS", "Python", "WebSocket", "HTML", "JavaScript"],
+    "article":
+    `
+    <h1>LAN Phone Controllers</h1>
+    <div class="adesc">I promise this is really cool.</div><br/>
+    I've had a hard time convincing anyone that this project is as cool as I
+    think it is. In the past, I've had a lot of trouble using multiple
+    controllers on one computer. As I filled more USB ports, controllers start
+    disconnecting themselves, and bluetooth connections seem to be laggy and
+    setting up the connections always takes several tries to work.
+    <br/><br/>
+    This project is designed to solve that issue, by replacing inconvenient and
+    inconsistent controllers with uncomfortable phone controllers. This is an
+    idea I already explored in my Asteroids game, but this is an entirely new
+    project without any shared code. I added a lot of cool features into this
+    project that I really think are worth showing off, though.
+    <br/><br/>
+    <h1>Architecture</h1>
+    <img class="aimage" src="images/lan_diagram.webp"><br/>
+    The main part of this project is a NodeJS express server. I use this to
+    serve both the controller page, and the settings page, on separate ports.
+    This NodeJS server also hosts the WebSocket servers, to be connected to by
+    both the controllers and the Python script, and accesses the saved
+    controller layout files.
+    <br/><br/>
+    Controller layouts are both saved as a file and updated over WebSockets as
+    JSON files, which makes it easily pareseable by all of my scripts. If I
+    wanted to add an entirely new button, all I would have to do is create an
+    object for it in the layout JSON, and define to the Python script how to
+    implement those inputs.
+    <br/><br/>
+    <pre><code class="language-javascript">// The default controller layout, it has one joystick and two buttons onscreen
+
+[
+  {
+    "type": "button",
+    "id": "A",
+    "x": 75,
+    "y": 75,
+    "offScreen": false
+  },
+  {
+    "type": "button",
+    "id": "B",
+    "x": 85,
+    "y": 30,
+    "offScreen": false
+  },
+  {
+
+    "type": "button",
+    "id": "X",
+    "x": 12.5,
+    "y": -40,
+    "offScreenNum": 1,
+    "offScreen": true
+  },
+  {
+    "type": "button",
+    "id": "Y",
+    "x": 0,
+    "y": -40,
+    "offScreenNum": 0,
+    "offScreen": true
+  },
+  {
+    "type": "joystick",
+    "id": "LJ",
+    "x": 20,
+    "y": 50,
+    "offScreen": false
+  },
+  {
+    "type": "joystick",
+    "id": "RJ",
+    "x": 25,
+    "y": -40,
+    "offScreenNum": 2,
+    "offScreen": true
+  }
+]</code></pre><br/>
+    The coolest effect of all these features working together is that I can
+    modify controllers per-game on the fly, AND I can even see it update on the
+    phone screens in realtime! Very few games need all the controls at once, so
+    being able to change which ones are includes, and where they are positioned
+    on the screen, <em>without</em> needing to relaunch anything, makes for a
+    very smooth experience.
+    <br/><br/>
+    <img class="aimage" src="images/lan_clip0.gif">
+    <div class="adesc">Realtime updating of controllers doesn't actually provide
+    much benefit - but it's fun.</div><br/>
+    I've mentioned the Python server a few times, but I haven't explained it
+    yet. When I was making this project, I intended to use the
+    <a href="https://github.com/nefarius/ViGEmBus" target="_blank">ViGEmBus library</a>, which provides NodeJS
+    bindings for
+    <a href="https://docs.nefarius.at/projects/ViGEm/" target="_blank">ViGEm</a>.
+    However, I was unable to get this to install correcty. I kept getting
+    bizarre C++ build errors, and eventually I gave up. Since finishing this
+    project, that npm package has already been removed anyway. I decided to try
+    <a href="https://pypi.org/project/vgamepad/" target="_blank">vgamepad</a>,
+    a Python library that provides bindings for ViGEm as well. Surprisingly,
+    this one worked fine out of the box, but I really didn't want to have to
+    redo all of that server work in an inferior language. So I made a tiny
+    Python script that connects to the NodeJS server through a WebSocket, and
+    will emulate gamepad inputs as it's instructed to.
+    <br/><br/>
+    <pre><code class="language-python">import sys
+import vgamepad
+import asyncio
+import websockets
+import json
+
+# Both the Python and NodeJS scripts support adding and removing players without
+# needing to restart anything.
+cList = {}
+
+bList = {
+    "U": vgamepad.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_UP,
+    "D": vgamepad.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_DOWN,
+    "L": vgamepad.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_LEFT,
+    "R": vgamepad.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_RIGHT,
+    "A": vgamepad.XUSB_BUTTON.XUSB_GAMEPAD_A,
+    "B": vgamepad.XUSB_BUTTON.XUSB_GAMEPAD_B,
+    "X": vgamepad.XUSB_BUTTON.XUSB_GAMEPAD_X,
+    "Y": vgamepad.XUSB_BUTTON.XUSB_GAMEPAD_Y
+}
+
+async def waitForControls():
+    async with websockets.connect("ws://localhost:" + sys.argv[1]) as websocket:
+        # sys.argv[1] is the port for the python script WebSocket.
+        # It's passed when this script is called from the NodeJS server.
+        while 1:
+            data = json.loads(await websocket.recv())
+
+            # The controller is based on the number of the player, which is
+            # determined by iterating for each WebSocket connection. This keeps
+            # players from swapping places, and makes it easy to add/remove
+            # controllers on the fly.
+            controller = data["controller"]
+            if not controller in cList:
+                cList[controller] = vgamepad.VX360Gamepad()
+            gamepad = cList[controller]
+
+            if "disconnect" in data:
+                del cList[controller]
+                del gamepad
+                continue
+
+            for b in data["buttons"]:
+                if b in bList:
+                    if data["buttons"][b]:
+                        gamepad.press_button(bList[b])
+                    else:
+                        gamepad.release_button(bList[b])
+                elif b == "RJ":
+                    gamepad.right_joystick_float(
+                        x_value_float = data["buttons"][b][0],
+                        y_value_float = -data["buttons"][b][1]
+                    )
+                elif b == "LJ":
+                    gamepad.left_joystick_float(
+                        x_value_float = data["buttons"][b][0],
+                        y_value_float = -data["buttons"][b][1]
+                    )
+
+
+            gamepad.update()
+
+asyncio.run(waitForControls())</code></pre><br/>
+    This script is actually called from inside the NodeJS server. It first
+    calls <div class="amath">pip install vgamepad websockets</div> before trying
+    to start the Python server, which will automatically establish a WebSocket
+    connection.
+    <br/><br/>
+    <h1>Putting it all together</h1><br/>
+    Here's some clips of Mario Kart Wii gameplay, using the Dolphin emulator,
+    playing with a LAN controller on my phone. Despite the controller being
+    slightly difficult to use, it's still completely playable. There is no
+    noticable latency, no matter how many controllers are connected at once.
+    This is not the ideal gaming experience, but when dealing with a large
+    number of players, it's a great alternative to physical controllers!
+    <br/><br/>
+    <iframe class="ayt"
+    src="https://www.youtube-nocookie.com/embed/AgdxZ56Och0?si=Flhxsy4dTceVqC8d" frameborder="0"
+    allowfullscreen></iframe>
+    <img class="aimage" src="images/lan0.webp">
+    <div class="adesc">The controller layout here was a simple 3-button layout.
+    "A" was mapped to gas, "B" was mapped to brake/drift, and "X" was mapped to
+    the item button.</div></br>
+    I've tested this across multiple softwares, and I've yet to find one that
+    fails to recognize this as a valid controller. The ability to add and
+    remove controllers by will, using existing hardware that most people own,
+    the ability to reshape the layouts of those controllers, all in real-time
+    and synchronized, and the fact that this whole project can do this with
+    better reliability than USB or bluetooth controller connections, is what I
+    like so much about this project. It all ends up feeling like a very elegant
+    solution to a problem I've dealt with a lot.
+    `
+  },
+  {
+    "src": "thmb_5",
+    "title": "MotorStorm Track Rip",
+    "desc": "Rip of \"The Grizzly\" from MotorStorm to eventually be used as a track mod for Mario Kart 8",
+    "tags": ["Blender", "NodeJS", "Python"],
+    "article":
+    `
+    <h1>MotorStorm is awesome</h1>
+    <div class="adesc">This my favorite game of all time. There isn't a
+    punchline or anything, I just really like this game.</div><br/>
+    <a href="https://en.wikipedia.org/wiki/MotorStorm" target="_blank">MotorStorm</a>
+    is a 2006 off-road PS3-exclusive racing game, set in Monument Valley.
+    Despite its age, the game still holds up, in both graphics and gameplay (in
+    my objectively correct opinion). This game is notable for having a large
+    variety of vehicle classes, and almost all races have a mix of vehicle
+    classes to make a more exciting experience. While different classes vary
+    greatly in handling, all of them are designed to feel unweildy and difficult
+    to control, while driving over uneven, bumpy, terrain, on narrow tracks with
+    poor traction. The game is challenging and brutal, and I love it.
+    <br/><br/>
+    <img class="aimage" src="images/motorstorm1.webp" fetchpriority="highest">
+    <br/><br/>
+    The base game has eight tracks, but "The Grizzly" is distinctly the main
+    track. "The Grizzly" is the longest track in the game, and is treated like
+    the most important track in the game by repeatedly using it as a closer to a
+    set of races. "The Grizzly" is also the only track in the main game where
+    the player can choose their own vehicle class, instead of having one
+    assigned by the event. This means the track has an especially large number
+    of routes and variety of driving options, so that any combination of
+    vehciles will still be fun.
+    <br/><br/>
+    For a while I've been interested in Mario Kart 8 modding, especially due to
+    the relative ease and availability of tools like
+    <a href="https://mapstudioproject.github.io/TrackStudioDocs/index.html" target="_blank">Track Studio</a>.
+    In the past I practiced by making a Delfino Square mod using that software -
+    definitely unfinshed, but still fun to play.
+    <br/><br/>
+    <img class="aimage" src="images/motorstorm2.webp">
+    <img class="aimage" src="images/motorstorm3.webp">
+    <img class="aimage" src="images/motorstorm4.webp">
+    <div class="adesc">Some WIP renders from the Delfino Square mod. Most
+    textures are ripped from base Mario Kart 8 (many are modfied), but all
+    models were hand-modeled, with the exceptions of the tree model, and the
+    Pianta Statue. I also went out of my way to add extra paths to the map, and
+    to integrate some Mario Kart 8 features (like zero-graviity), which I would
+    personally argue are essential for any good Mario Kart 8 port - which is
+    something that I'll bring up again when discussing "The Grizzly."</div><br/>
+    I discovered the software
+    <a href="https://ninjaripper.com/" target="_blank">Ninja Ripper</a>, and
+    found that an old version of this software supported
+    <a href="https://rpcs3.net/" target="_blank">RPCS3</a>, a PS3 emulator. I
+    don't kow exactly how NinjaRipper works, as it's closed-source, but the way
+    their project is described, it seems like it intercepts all OpenGL calls and
+    re-constructs the original geometry out of that. Once I got this software
+    installed and set up, it actually worked immediately - but it also presented
+    a lot of issues.
+    <br/><br/>
+    <h1>1) Camera projection</h1><br/>
+    There's multiple matrices used in converting world-space coordinates into
+    camera-space. It seems like NinjaRipper doesn't have access to any of these,
+    and instead is only able to read the camera-space vertex positions as
+    they're rendered on-screen. When actually importing these models, they are
+    rotated, scaled, and skewed into an incredibly uncomfortable position. I was
+    able to get it mostly upright and shaped correctly through trial and error,
+    and then I could use the perfectly circular skybox and perfectly circular
+    vehicle wheels as a reference to make it near-perfect.
+    <br/><br/>
+    <h1>2) Culling</h1><br/>
+    MotorStorm takes heavy advantage of culling to improve performance, and
+    honestly, good for them. The game is capped on 30 FPS on original hardware,
+    with dynamic resolution, and it <em>still</em> sometimes dips below. But
+    this means that my NinjaRipper scan only returned the section of the track
+    that was visible, and I had to go and take 16 more scans to get the entirety
+    of the track. All of these had to be manually adjusted.
+    <br/><br/>
+    <h1>3) Human inaccuracies</h1><br/>
+    It's pretty difficult to perfectly fix a 3D model that's effectively had a
+    random transformation matrix applied to it. Even though every model looked
+    correct to the human eye, there were slight imperfections, and these made
+    adjacent sections of the track slightly misaligned from each other. I tried
+    to just work around it at first, but some of the gaps were multiple meters
+    wide. For this, I had to write a Python script in Blender. I'm actually
+    pretty proud of how this worked out - I select four reference vertices in
+    both captures, and then could line them up <em>perfectly</em> with this
+    script.
+    <br/><br/>
+    <pre><code class="language-python"># There's an obj1 and an obj2, this script moves obj2 onto obj1.
+# This was unfortunately difficult to figure everything out, because apparently
+# I'm the first person to ever have this problem. I get that it's not a common
+# issue, but it's bizarre that there's no mention of this kind of problem
+# anywhere I can find...
+
+# Transformation matrix of obj2 is first reset back to default.
+obj2.matrix_world = Matrix([[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]])
+obj2.data.update()
+bpy.context.view_layer.update()
+
+# Using the four reference points, these lines construct two matrices that
+# contain the points in each column, with 1's in the last row.
+M1 = Matrix([[(obj1.matrix_world @ obj1.data.vertices[obj1v[c]].co)[e] for c in r4] for e in r3] + [[1, 1, 1, 1]])
+M2 = Matrix([[(obj2.matrix_world @ obj2.data.vertices[obj2v[c]].co)[e] for c in r4] for e in r3] + [[1, 1, 1, 1]])
+
+# Then the matrix that transforms M2 onto M1 is solved for!
+M = M1 @ M2.inverted()
+
+# Finally, this matrix is applied to each individual object.
+sel_objs = [obj for obj in bpy.context.selected_objects]
+for obj in sel_objs:
+    # All other objects that are moving with obj2 are reset as well.
+    obj.matrix_world = Matrix([[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]])
+
+    # You might notice I used obj.matrix_world on the previous line, and
+    # .data.transform on this line. That's not accidental. If I set the
+    # matrix_world value directly, by setting it, it acts like everything works,
+    # but it doesn't. Internally, and secretly, Blender converts this matrix
+    # into indivudal position, rotation, and scaling values. This is great in
+    # the majority of cases, but in mine, due to the types of distortion that
+    # come from projection matrices, the value of M cannot necessarily be
+    # decomposed into position, rotation, and scale. So instead, Blender just
+    # tries its best, and leaves behind giant gaps.
+
+    # .data.transform will instead apply my matrix directly to each indivual
+    # vertex. I don't mind having to use a different function for this, but I
+    # wish it was documented somewhere! I wish that .matrix_world wouldn't
+    # modify the data I put in to be an "approximation," and I wish that it
+    # didn't take me three days to figure it out!
+    obj.data.transform(M)</code></pre><br/>
+    This script ended up working great. My track was finally in one piece, and
+    everything was aligned perfectly. Linear algebra can be a pain, but it's
+    fantastic when it works.
+    <br/><br/>
+    <img class="aimage" src="images/motorstorm5.webp">
+    <img class="aimage" src="images/motorstorm10.webp">
+    <div class="adesc">Ignore the colors here, I'll address that soon.</div><br/>
+    <h1>4) Duplicate geometry</h1><br/>
+    NinjaRipper would grab any geometry that is onscreen at the time, but
+    unfortunately this also means that a lot of geometry is onscreen in multiple
+    captures, leading to duplicate geometry. This wasn't a minor issue - the
+    majority of the geometry in the track was duplicated at least twice. I
+    wasn't able to come up with any easy fix for this - I had to, for each
+    object, check for duplicate objects, and delete them. I split this across
+    several days, but did eventually finish it.
+    <br/><br/>
+    <h1>5) Broken textures</h1><br/>
+    I'm not sure if this is a NinjaRipper bug, or some quirk with how MotorStorm
+    or RPCS3 is using textures, but nearly every single texture in the game had
+    color channels swapped, seemingly at random, and offset horizontally, by an
+    amount exactly equal to 1/3 of the height. Given that there were some
+    800-ish textures, this was not something I wanted to manually photoshop for
+    each one, so I wrote some scripts to fix this issue.
+    <br/><br/>
+    <pre><code class="language-javascript">// Simple NodeJS script to take a folder of images, and offset their x-position
+// by 1/3rd of the image height. If you somehow find this script useful, feel
+// free to use it without credit. Go nuts.
+
+const express = require("express");
+const canvas = require("canvas");
+const fs = require("fs");
+const bmp = require("bmp-js");
+const path = require("path");
+
+const app = express();
+
+if (!fs.existsSync("./output2"))
+  fs.mkdirSync("./output2");
+
+fs.readdirSync("./input2").forEach(file => {
+  let localFile = file;
+  canvas.loadImage("./input2/" + localFile).then(img => {
+    console.log(\`\\x1b[33mImage \${localFile} loaded\\x1b[0m\`);
+    let can = canvas.createCanvas(img.width, img.height);
+    let ctx = can.getContext("2d");
+    let offs = Math.round(img.height / 3);
+    ctx.drawImage(img, offs - img.width, 0);
+    ctx.drawImage(img, offs, 0);
+    ctx.drawImage(img, offs, 1);
+
+    fs.writeFileSync("./output2/" + localFile, can.toBuffer("image/png"));
+    console.log(\`\\x1b[92mImage \${localFile} corrected\\x1b[0m\`);
+  });
+});
+
+console.log("\\n\\x1b[92mDone\\x1b[0m");</code></pre>
+    <br/><br/>
+    That first script only fixes their positioning, but they were still
+    discolored. Becuase there was no observable pattern to the RGB shifting,
+    this second script creates a UI for me to, one-by-one, select the correct
+    image from a list of options.
+    <br/><br/>
+    <pre><code class="language-javascript">// This is a more complicated NodeJS script to resort the RGB channels of an
+// image. This is definitely more useful than the previous script, but I'm going
+// to continue the bit from the previous script and say that you can steal this
+// code as well. Go Nuts.
+const express = require("express");
+const canvas = require("canvas");
+const fs = require("fs");
+const bmp = require("bmp-js");
+const path = require("path");
+
+// I made this function as an express server so I could get an easy UI for free.
+// If I were making this for use by anyone but myself, I would not have done it
+// like this.
+const app = express();
+
+const IMAGES = [];
+
+// There's only six ways to rearrange RGB channels! Crazy!
+const FORMATS = [
+  "RGBA",
+  "RBGA",
+  "GRBA",
+  "GBRA",
+  "BRGA",
+  "BGRA"
+];
+
+function swapChannels(img, newFormat){
+  newFormat = [
+    "RGBA".indexOf(newFormat[0]),
+    "RGBA".indexOf(newFormat[1]),
+    "RGBA".indexOf(newFormat[2]),
+    "RGBA".indexOf(newFormat[3])
+  ];
+  let out = new Uint8ClampedArray(img.data.length);
+  for(i = 0; i < img.data.length; i += 4){
+    out[i] = newFormat[0] < 0 ? 255 : img.data[i + newFormat[0]];
+    out[i + 1] = newFormat[1] < 0 ? 255 : img.data[i + newFormat[1]];
+    out[i + 2] = newFormat[2] < 0 ? 255 : img.data[i + newFormat[2]];
+    out[i + 3] = newFormat[3] < 0 ? 255 : img.data[i + newFormat[3]];
+  }
+  return canvas.createImageData(out, img.width, img.height);
+}
+
+fs.readdirSync("./input").forEach(file => {
+  try{
+    let img = bmp.decode(fs.readFileSync("./input/" + file));
+    console.log(\`\\x1b[92mLoaded \${file}\\x1b[0m\`);
+
+    // This deduplicator really shouldn't be like this, but for some reason, it
+    // both works, and works efficiently? I should have had to hash the image
+    // and compare the hashes - but for some reason Uint8ClampedArray.equals
+    // just worked out of the box. My script ran without any lag.
+    let dup = false;
+    for(var i = 0; i < IMAGES.length; i++){
+      if(IMAGES[i].img.data.equals(img.data)){
+        console.log("Duplicate of " + IMAGES[i].filename);
+        console.log("\\x1b[33mSkipping...\\x1b[0m")
+        dup = true;
+        break;
+      }
+    }
+    if(!dup){
+      let can = canvas.createCanvas(img.width, img.height);
+      console.log(IMAGES.length);
+      IMAGES.push({
+        filename: file,
+        img: img,
+        can: can,
+        ctx: can.getContext("2d"),
+        imageData: swapChannels(canvas.createImageData(
+          new Uint8ClampedArray(img.data.buffer),
+          img.width,
+          img.height
+        ), "ABG-")
+      });
+    }
+  }catch(e){}
+});
+
+console.log(\`Loaded \${IMAGES.length} images\`);
+
+// Don't worry about this, interface.html just has six buttons to let you choose
+// which of the images are correct.
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "/interface.html"));
+});
+
+// interface.html passes two parameters to the img.png endpoint, "n" determines
+// which image in the folder is returned, and "v" is the option of color
+// channels which are being displayed.
+app.get("/img.png", (req, res) => {
+  let {filename, can, ctx, imageData} = IMAGES[req.query.n];
+
+  if(req.query.v)
+    imageData = swapChannels(imageData, FORMATS[req.query.v]);
+
+  ctx.putImageData(imageData, 0, 0);
+
+  res.set("Content-Type", "image/png");
+  res.send(can.toBuffer("image/png"));
+});
+
+// Super simple, uses the same parameters as the previous endpoint, but this
+// time it saves the chosen image to an output directory.
+app.get("/choose", (req, res) => {
+  let {filename, can, ctx, imageData} = IMAGES[req.query.n];
+
+  if(req.query.v)
+    imageData = swapChannels(imageData, FORMATS[req.query.v]);
+
+  ctx.putImageData(imageData, 0, 0);
+
+  if (!fs.existsSync("./output"))
+    fs.mkdirSync("./output");
+
+  fs.writeFileSync("./output/" + filename, can.toBuffer("image/png"));
+
+  res.sendStatus(200);
+});
+
+app.listen(80);
+
+console.log("\\n\\x1b[92mReady!\\x1b[0m");</code></pre><br/><br/>
+    <h1>6) Broken materials</h1>
+    <div class="adesc">Wait, I'm not done yet?</div><br/>
+    NinjaRipper has another issue (shocker), which is that it does not
+    automatically deduplicate materials or images. In addition to that, Blender
+    does not seem to have a way to change directory for all textures. This
+    leaves me with another long manual step. For every object/material in the
+    game, I have to manually find the corrected version of every texture, or
+    find a duplicate of that material I already created. There wasn't any way to
+    do this step automatically.
+    <br/><br/>
+    There's a second problem, though. MotorStorm tracks are generally made of
+    one or more terrain models, using heightmaps, and multiple regular  models,
+    usually duplicated multiple times although often deformed. The regular
+    models are no problem, as everything I've done so far was designed to work
+    with them. But the terrain has a second issue, which is that they have
+    multiple sets of textures that are interpolated between based on vertex
+    colors.
+    <br/><br/>
+    <img class="aimage" src="images/motorstorm6.webp">
+    <div class="adesc">Take a look at how there are two distinct textures on the
+    ground here.</div><br/>
+    MotorStorm uses vertex painting to mix between these textures, which does a
+    great job of making the ground look more natural. The issue is, NinjaRipper
+    did not pull the vertex colors, so I don't have access to the real data. But
+    even if I manually repainted it all by hand, in Mario Kart 8, I do not have
+    the ability to mix between textures like that. So I did the next best thing,
+    which was constructing my own combination textures that used a noise texture
+    to mix between multiple ground textures.
+    <br/><br/>
+    <div class="imgcenter"><img class="simg" src="images/motorstorm7_thmb.webp"></div>
+    <div class="adesc">See how this is the same textures being mixed as in the
+    screenshot above? Ignore difference in color balance, that's postprocessing
+    in MotorStorm.</div><br/>
+    This combined material actually does a great job of imitating the same
+    effects as in the game, although it won't be aligned to the track geometry
+    at all. I made several other combined textures, for muddy sections, for
+    rockier sections, and for vertically-raised sections.
+    <br/><br/>
+    Unfortunately, that's where I have to stop. I'm still in the middle of
+    fixing all the materials in the model, and there's further issues that I
+    haven't even started on yet. Many of the models have completely broken UVs
+    that I'll have to fix manually, the game uses billboard grass textures,
+    which I cannot replicate correctly in Mario Kart 8, there are still some
+    missing geometry which I need to recapture, and I need to figure out how to bake
+    shadows and lights into the Mario Kart 8. But the work I've done so far I
+    think looks great.
+    <br/><br/>
+    <img class="aimage" src="images/motorstorm9.webp">
+    <img class="aimage" src="images/motorstorm0.webp">
+    <img class="aimage" src="images/motorstorm8.webp">
+    <img class="aimage" src="images/motorstorm11.webp">
+    <br/><br/>
+    This project isn't done yet, and it's still pretty far from being finished.
+    But I'm happy with the progress so far, and I can't wait to play this
+    ingame.
+    `
+  },
+  {
+    "src": "thmb_6",
+    "title": "Invisible Lizard Hunter",
+    "desc": "Procedurally-generated top-down shooter",
+    "tags": ["HTML", "JavaScript", "Canvas"],
+    "git": "https://github.com/jchabin/lizards",
+    "link": "https://jchabin.github.io/lizards/",
+    "article":
+    `
+    <h1>The name <em>does</em> make sense</h1>
+    <div class="adesc">Technically a horror game if you're easily scared enough.
+    </div><br/>
+    This a small project that I made in only a few hours. It's a small,
+    procedurally-generated, top-down shooter, where you fight against
+    procedurally-animated camouflaging lizards. The game starts with 30 lizards,
+    and the game is "won" by eliminating all of them.
+    <br/><br/>
+    <img class="aimage" src="images/lizards0.webp">
+    <br/><br/>
+    <h1>Lizard construction</h1><br/>
+    I didn't have much of a plan going in to this - all I knew is I wanted to
+    experiment with making a little walking animation for a lizard-creature,
+    without any hand animation. The lizard themselves have three unique types of
+    body parts: head, body, and feet.
+    <br/><br/>
+    The head reacts before the rest of the lizard does, able to rotate freely,
+    and move freely (within the maximum movement speed of the lizard). The head
+    is treated like the parent of the lizard, and all other segments are treated
+    like recursive children of the head and each other.
+    <br/><br/>
+    The body pieces are extremely similar - they orient themselves to point
+    towards their "parent" piece, and then move towards the parent to close the
+    gap. All body and head pieces individually test for collision with the
+    player's bullets, which gives a more interesting and precise hitbox than
+    just using a single box for the whole lizard.
+    <br/><br/>
+    The feet are either children of the 2nd segment (front feet) or the 4th
+    segment (back feet). These feet have a "target position" that is in front of
+    that parent segment, and offset, either to the left or to the right. The
+    feet do not move as the lizard moves, and will remain still - insead, each
+    foot is also instantiated with a "count" value, and as the lizard moves,
+    this count is increased by the distance traveled by the lizard over that
+    frame. Once the count value crosses a threshold, the foot is pulled back to
+    its target position, and its count value is dropped by 1. The way this
+    results in an actual walk cycle is that the initial value of count is
+    different for each foot! They're offset by 0.25.
+    <br/><br/>
+    <h1>Map generation</h1><br/>
+    This simple movement behavior created a convincing animated lizard
+    silhouette, but I wanted this to be an actual game. In the same style as the
+    lizards themselves, I wanted the map to be blockly and brightly colored, so
+    I made the entire map out of brightly colored blocks.
+    <br/><br/>
+    <img class="aimage" src="images/lizards1.webp">
+    <div class="adesc">Zoomed out version a game map.</div><br/>
+    The generation is very simple - starting at the center, generate a rectangle
+    of a random color, and then add the sides of the rectangle to queue.
+    Repeatedly generate new rectangles by pulling from that queue until 200 have
+    been generated. As it's generating, a few rules are applied:
+    <br/><br/>
+    As more rectangles are generated, it becomes more likely for some, or all,
+    of a rectangle's sides to not be added to the queue.
+    <br/><br/>
+    Each rectangles' color should be the color of the one it's attached to, plus
+    a random value (generated with a color wheel, so values are % 360). As the
+    rectangles are generated further from the center, the random color offset
+    gets smaller and smaller.
+    <br/><br/>
+    <img class="aimage" src="images/lizards2.webp">
+    <div class="adesc">Look closely at the generation as it gets further from
+    the center. The center is dense, and has less related colors, but as the
+    generation reaches the outside, it becomes more open and spread out, and the
+    colors form much more of a gradient! This was something I wanted for
+    difficulty scaling, the way this works will make sense soon.</div><br/>
+    The way the player interacts with the map is actually ridiculously simple. I
+    have an array of every rectangle that makes up the map, and I use empty
+    space as walls. In order to detect wall collision, I just check if the
+    player, or any lizard, or bullet, would be moving outside of <em>every</em>
+    rectangle in the game. Due to the simplicity of collision detections, and
+    the relatively small map size, this is not a performance issue.
+    <br/><br/>
+    <h1>Lizard behavior</h1><br/>
+    The lizards function as a simple three-state state machine, and have these
+    behaviors, even when offscreen.
+    <br/><br/><h1></h1><br/>
+    <img class="aimage" src="images/lizards_clip0.gif">
+    <br/><br/>
+    <h3>Wander</h3><br/>
+    This is the default behavior of the lizards. They zig-zag at a slow speed,
+    and if they hit a wall, they turn around. Their movement ignores the player.
+    <br/><br/><h1></h1><br/>
+    <img class="aimage" src="images/lizards_clip1.gif">
+    <br/><br/>
+    <h3>Flee</h3><br/>
+    I'm a believer in significant randomness being essential for a convincing
+    "animalistic" enemy. Fleeing can be triggered by several events, but these
+    are probabilities, not certainties. If the lizard is ever shot, there is a
+    50% chance it flees, if you fire near a wandering lizard, there is a 50%
+    chance it flees, and every time you fire at an attacking lizard, there is a
+    5% chance it flees. These were balances so that the lizards feel
+    unpredictable, although I'll certainly admit the illusion is largely broken
+    by explaining the AI and showing diagrams with brightly colored lizards for
+    visibiltiy.
+    <br/><br/>
+    When fleeing, the lizard simply aims away from the player, and runs in that
+    direction. It moves significantly faster than the player, meaning that it
+    takes strategy to hunt a lizard, and that fleeing is an effective decision
+    from the lizards' point of view. Once the lizard reaches an acceptable
+    distance, usually off the screen, the lizard returns to wander mode.
+    <br/><br/><h1></h1><br/>
+    <img class="aimage" src="images/lizards_clip2.gif">
+    <br/><br/>
+    <h3>Attack</h3><br/>
+    The attack strategy is another very probabalistic behavior, and can be
+    activated in far more ways than fleeing. If the lizard is shot, or shot near
+    while wandering, there's a 50% chance the lizard attacks. If the player
+    gets very close to a lizard, it attacks suddenly, and if a player stays
+    fairly close, the lizard will often attack randomly. There's one more case
+    that causes an attack - if the lizard is attempting to flee, but is trapped
+    by walls, it will quickly attack, due to being cornered.
+    <br/><br/>
+    Attacking is the most complex behavior, too. The lizard assigns an target
+    position that is very near the player, but randomly offset. It then sprints
+    to that spot, and once it is reached, assigns a new target. When the lizard
+    is touching the player, the player will take damage. This targeting is for
+    multiple reasons. It makes the lizards more unpredictable, it makes the
+    attack "animation" more visually interesting, and it makes lizards avoid
+    forming single-file lines when attacking in groups.
+    <br/><br/><h1></h1><br/>
+    The way lizards are spawned, while random, has an interesting distribution.
+    Lizards spawn more frequently near the edges. This both ensures the player
+    is not killed immediately after spawning, but also makes the game get harder
+    as you play through it. This increase in difficulty was mentioned before
+    when talking about map generation, but I'll soldify the concept with the
+    next, and most interesting, section.
+    <br/><br/>
+    <h1>Color-changing</h1><br/>
+    The most unique aspect of the game is that the lizards change color to
+    camouflague with their backgrounds. Despite this being a brightly-colored
+    game with no sound, the potentionally hidden enemies create a surprising
+    amount of tension.
+    <br/><br/>
+    Despite being the most notable mechanic in the game, the color-changing is
+    actually surprisingly simple. All colors in the game are stored as a number,
+    ranging from 0-359, which are used in a CSS hsl function to generate the
+    actual color. The lizards do checks of the map rectangles to check what
+    color they're standing on, and modify their color number to approach the
+    background color. Because the background is checked with the same priority
+    as the background rectangles are layered, it is guaranteed to get the
+    correct color.
+    <br/><br/>
+    These colors are not changed per-segment, but are calculated per-lizard
+    instead. This has a few advantages - I want the lizards to be fairly visible
+    as they cross color boundaries, which is also why the color fades, instead
+    of changing suddenly. This is also why I talked about map generation
+    impacting difficulty earlier. Making the edges of the map have fewer rooms
+    and smaller color changes means the player is forced to be closer to the
+    lizards, and the lizards are less visible due to smaller color changes.
+    <br/><br/>
+    <h1>Finishing up</h1><br/>
+    I had a color-blind friend in high school, who complained that this game was
+    too difficult, due to their color-blindness. Which, in hindsight, is an
+    obvious issue. Although to be honest, I'm not sure if the game was actually
+    significantly more difficult for them, or if the game is just difficult for
+    everybody, because it's a difficult game. For this reason, I added some
+    basic color-blind settings into the game. If you add
+    <div class="amath">?cb=1</div> to the end of the URL, the game's color
+    scheme is swapped for one that is more vibrant, but only uses half the color
+    wheel, such that a person who could not see a specific color would have less
+    difficulty. The same is true if you add <div class="amath">?cb=3</div> or
+    <div class="amath">?cb=4</div>, which both just select different sections of
+    the color wheel. The one outlier is <div class="amath">?cb=2</div>, which
+    makes the <div class="amath">[0, 360)</div> color values map to
+    <div class="amath">[0, 100)</div> brightness instead. This last one is
+    more difficult to play, unfortunately, as the player and black background
+    are more difficult to distinguish from the background.
+    <br/><br/>
+    Besides that, I haven't updated this game since the initial verison. I like
+    what it is, and I still mess around with it occasionally. I'm always
+    surprised when people play it, and treat it like a genuine horror
+    experience. From where I'm standing, nothing in this game is scary, nothing
+    should incite fear, it's just a tiny little shooter game. I guess I should
+    use this as a case-study, that loud noises and jumpscares aren't needed for
+    fear, just a sensation of losing control, of feeling powerless, and a
+    healthy fear of the unknown.
+    <br/><br/>
+    This is one of the games that I think would be the most fun to remake in VR.
+    It wouldn't be able to use the same style at all, I envision it as more of
+    a sci-fi-themed close-quarters VR shooter against camouflaging lizards, that
+    are both faster than you and bigger than you. Guns usually make a player
+    feel empowered, but for some reason, it just makes you feel how weak your
+    flesh is.
+    `
+  },
+  {
+    "src": "thmb_7",
+    "title": "\"Amogus Funkin\"",
+    "desc": "Subversive parody-horror game",
+    "tags": ["HTML", "JavaScript", "THREE.js", "Canvas", "Blender"],
+    "article":
+    `
+    <h1>Impostor Syndrome</h1>
+    <div class="adesc">Maybe someday I'll release this.</div><br/>
+    This game is most likely dead. For a long time, I've found that the most
+    effective horror happens when the player isn't approaching the game like a
+    horror game. It's not effective due to catching the player off-guard, it's
+    because it's difficult for a player to feel genuinely unsettled if they are
+    playing a game for the purpose of being unsettled. The scariest gaming
+    experiences I've had were not in actual horror games, they were in regular
+    games that, intentionally or not, behaved in an unexpected and disturbing
+    way.
+    <br/><br/>
+    A fun example is in <a href="https://store.steampowered.com/app/823500/BONEWORKS/" target="_blank">BONEWORKS</a>
+    and <a href="https://store.steampowered.com/app/1592190/BONELAB/" target="_blank">BONELAB</a>,
+    which are VR physics-based combat games that have a focus on guns. The games
+    are both fairly eerie - lots of vacant environments, enemies that look
+    inhuman, and time spent in silence. But each of these games have their own
+    especially scary segment. BONEWORKS slowly introduces you to enemies and
+    combat mechanics as you progress through linear environments, but one of the
+    levels, "Sewers," uses all the same mechanics as the levels before, but
+    turns out the lights. There is nothing actually scary in Sewers - it's the
+    same enemies you've seen before, most of the same music tracks, the level is
+    generous with flashlights and night vision goggles, and all of the enemies
+    even have glowing features. But this is the first and only dark level in the
+    game. The established rules and precedent have been broken, and anything
+    could happen now.
+    <br/><br/>
+    BONELAB, the sequel to BONEWORKS, is a little less subtle with the scary
+    level. Many of the levels have secret keycards and doors scattered in
+    hard-to-reach places, and if you go through these doors, you end up in tiny
+    secret rooms with notes from a fictionalized version of the game studio. On
+    the "bowling alley" map, there's a secret door on the floor. When you open
+    it, and fall in, you're in a room that stretches further than you can see,
+    with rounded pillars placed on a grid, and all covered in blue pool tiles.
+    The room is completely dark but for some scattered lights hanging from the
+    ceiling, they do little to light the room. The happy bowling alley music
+    stops the moment you enter. If you wander around for a while, you can find a
+    few developer notes, both placed on the seat of an old couch. BONELAB
+    clearly establishes to the player that enemies are scattered
+    <em>everywhere</em> in the game, and this is a very large room.
+    <br/><br/>
+    For a long time, I've wanted to make a game that takes advantage of this.
+    Just a game that pretends, for as long as possible, to be completely normal,
+    before breaking all the rules previously established with the player. The
+    target audience for the game it <em>not</em> a person who loves horror
+    games, but rather a person who wanted to play a stupid little game, and is
+    sucked into something completely unpredictable and unexpected.
+    <br/><br/>
+    I've attached below a clip from development of "Amogus Funkin," which is an
+    attempt at that concept. It's very unfinished, has some broken graphics, has
+    some mediocre music, and stops abruptly.
+    <br/><br/>
+    <iframe class="ayt"
+    src="https://www.youtube-nocookie.com/embed/ADAX1Td-8ME?si=fn2c4BLsoXXo4MaM" frameborder="0"
+    allowfullscreen></iframe>
+    <div class="adesc">The first half of the video is gameplay of the rhythm
+    game, but if you've seen enough of it you can skip to 1:50 to see the rest.
+    </div><br/>
+    <h1>Making this thing</h1><br/>
+    This game has two parts: The rhythm game, and the 3D section. Let's start
+    with the rhythm game, because I made that part first.
+    <br/><br/>
+    This game is in part a parody of
+    <a href="https://ninja-muffin24.itch.io/funkin" target="_blank">Friday Night Funkin'</a>.
+    To be honest, I've played this game, but did not especially enjoy it. The
+    "Newgrounds" art style has never really appealed to me, I find the
+    "beep-boop" vocals to be more annoying than anything, and I've never really
+    been a fan of rhythm games. As I write it, this sounds mean, all I want to
+    say is that this is not a game I was interested in, for subjective reasons
+    of taste.
+    <br/><br/>
+    The other parodic inspiration for this game was
+    <a href="https://www.innersloth.com/games/among-us/" target="_blank">Among Us</a>
+    (obviously). I had played this game quite a bit, with friends and with my
+    brother - but none of this was why I chose to make this game the way it was.
+    I've noticed a massive explosion of Friday Night Funkin' mods, and an
+    explosion of Among Us characters being used in various other media. To me,
+    this presented the perfect "fake game" which would eventually be revealed as
+    a horror game.
+    <br/><br/>
+    This is not a Friday Night Funkin' mod, rather it's a loose remake of its
+    mechanics in JavaScript with Canvas. It functions basically how you'd
+    expect - songs are stored as an array of objects, constructed by parsing a
+    text file.
+    <br/><br/>
+    <pre><code class="language-javascript">// Small sample of the song parsing logic. There's a header section in the song
+// file, which contains the data listed in this first object. Most of these
+// names should be intuitive, except for "errorM" - this is the error margin,
+// and determines how generous the note is with timing the player's key press.
+var song = {
+  timeSigTop: parseInt(e.split("|")[0].split("/")[0]),
+  timeSigBottom: parseInt(e.split("|")[0].split("/")[1]),
+  bpm: parseFloat(e.split("|")[0].split("/")[2]),
+  scrollSpeed: parseFloat(e.split("|")[0].split("/")[3]),
+  errorM: parseFloat(e.split("|")[0].split("/")[4]),
+  notes: [],
+  audio: audio[id]
+};
+
+var nd = e.split("|")[1].split("\\n");
+for(var i = 0; i < nd.length; i++){
+  nd[i] = nd[i].trim();
+  if(nd[i] == "")
+    continue;
+
+  // These are the properties for a note object. Notably - "loc" is vertical
+  // position of the note, measured in quarter notes, "key" is which of the four
+  // arrows is used to hit that note, "note" is pitch of the note itself,
+  // formatted like "D#4", and "player" determines which player each note is
+  // played by.
+  song.notes.push({
+    loc: parseFloat(nd[i].split("/")[0]),
+    key: parseInt(nd[i].split("/")[1]),
+    note: nd[i].split("/")[2],
+    length: parseFloat(nd[i].split("/")[3]),
+    player: parseInt(nd[i].split("/")[4]),
+    visible: 1
+  });
+}</code></pre><br/>
+    This text file is, thankfully, not written by hand. I wrote a small tool for
+    transcribing songs for this game. It lets the player drop notes on a
+    set of vertical piano rolls, the notes are color-coded to indicade which key
+    is needed to hit that note.
+    <br/><br/>
+    <img class="aimage" src="images/amogus0.webp">
+    <div class="adesc">This is just drawn with canvas, nothing special. The
+    buttons at the bottom are for import/export, and behave as you would expect.
+    Notice the note names at the top, and the bar numbers.
+    </div><br/>
+    Once these notes are loaded and the game starts, I used
+    <a href="https://tonejs.github.io/" target="_blank">Tone.js</a> with a
+    sawtooth wave to generate the Synths for the players. This is actually
+    completely different to how Friday Night Funkin' handles the music. In that
+    game, there are two sound files: one contains the music with player vocals
+    removed, and the other is the isolated player vocals. If the player is
+    hitting the correct notes, the player vocals are enabled, otherwise it's
+    muted. This also means the player vocals don't need to be synchronized to
+    the notes onscreen, and that's very frequently the case. I don't really like
+    how it's handled in that game, however. I chose to make a background track
+    with no vocals at all, and all sounds from both the opponent and the player
+    are generated with Tone.js Synths. Furthermore, all of the onscreen notes
+    have a pitch associated with them, and will play that note when hit. This
+    means the sounds heard are <em>perfectly</em> synchronized to the key
+    presses, because the key press causes the sounds to play. If the player hits
+    a note at the wrong time, the note is heard at the wrong time, and if the
+    player holds a note, the note is held.
+    <br/><br/>
+    While this difference in gameplay is a design deciosion, and I'm certainly
+    biased, I like the way I did it a lot better. If I'm getting ahead or behind
+    I can hear it happening, and I'm extra incentivized to hits notes perfectly,
+    as the difference in timing sounds unpleasant.
+    <br/><br/>
+    I wanted the art in this section to look kinda bad, as I think it helps sell
+    the first impression being "bad shovelware." The background was made in
+    Blender in two minutes, and all of the sprites were drawn with a mouse in
+    five minutes. I made the canvas use a low resolution, lower than any of the
+    textures, because I liked the look, but a funny effect is that it makes my
+    two-frame dancing animations look significantly higher quality than they
+    really are.
+    <br/><br/>
+    <img class="aimage" src="images/amogus6.webp">
+    <div class="adesc">Some of the assets in full resolution.</div><br/>
+    <h1>Sector 6A</h1><br/>
+    <img class="aimage" src="images/amogus1.webp">
+    <br/><br/>
+    There's a point in the rhythm game section where the game speeds up, and a
+    hidden boolean is toggled. Instead of getting the regular death screen, a
+    fake death screen appears, position and zoomed to fill the screen perfectly.
+    When the player moves the mouse, the camera moves instead.
+    <br/><br/>
+    I wrote a simple player controller for this, which uses raycasters to check
+    for collision. There's a second, simplified version of the map that I check
+    collisions against. The fanciest part of the player controller is the way it
+    handles stairs - it allows the player to jump up a small gap, like going up
+    a stair, but the down raycaster also checks if the player is above the
+    ground by a small, stair-sized, amount, and if so, it snaps the player down.
+    Together, these makes stairs feel natural both up and down.
+    <br/><br/>
+    <img class="aimage" src="images/amogus_clip0.gif">
+    <br/><br/>
+    There are multiple light sources in the game, most of them have no shadow to
+    save on GPU resources, but the lights in the big room all cast detailed
+    shadows (these are pre-rendered at the start, not dynamic) and the red light
+    above the starting room casts a small dynamic shadow, so that the spinning
+    fan is visible in the shadow.
+    <br/><br/>
+    <img class="aimage" src="images/amogus2.webp">
+    <br/><br/>
+    Most of the textures (especially the ones with normal maps) are free
+    textures from <a href="https://polyhaven.com/" target="_blank">Poly Haven</a>
+    and <a href="https://ambientcg.com/" target="_blank">ambientCG</a>. Both of
+    these pages have a CC0 license on the assets hosted there, so I am using
+    these legally. All 3D models, however, I designed and mapped by hand, and
+    optimized to run well in THREE.js. Even on a slow system, the game runs very
+    well.
+    <br/><br/>
+    <img class="aimage" src="images/amogus3.webp">
+    <img class="aimage" src="images/amogus5.webp">
+    <div class="adesc">Zoomed out view of the whole map. Player spawns on the
+    left side, and the recording ended on the right side. Backfaces are not
+    rendered here, so you can see through rooms in a cool way.</div><br/>
+    The ambient sounds in the game are one of my favorite parts. In the photo
+    above, you can see a few red dots, and there are more that are not visible
+    at this angle. All of the music and ambient sounds in the 3D section of the
+    game is generated from a specific point in the game, and use 3D audio to
+    make left/right panning work correctly. The ambient music is divided into
+    six files, which are designed to make a full song when played together, but
+    also to sound plausibly industrial. This 3D audio effect, with positioning
+    and falloff, are made using <div class="amath">THREE.PositionalAudio</div>,
+    and the special names of the red dots mentioned before tell my script to
+    replace them with the 3D audio sources, and which audio file to use.
+    <br/><br/>
+    One fun detail about the audio is that the song on the death screen, which
+    is also placed as a 3D audio, is designed to be in a compatible key to the
+    creepy ambient music. It sounds confusing, due to the songs having different
+    speeds, but they're not obnoxiously dissonant. I'm still not that happy with
+    the songs themselves, but I'm limited by my own skillset. I have dozens of
+    other songs that I setup to work in this game, but decided against using,
+    due them not sounding good enough. I have some other songs I've written that
+    I had planned to use later in the game as well.
+    <br/><br/>
+    <h1>Postmortem</h1><br/>
+    This game is most likely dead. There's not really any sort of fascinating
+    reason, I think I just got busy with school, and work, and then I lost
+    interest. Someday, if I had the time, I'd love to come back and finish this.
+    But even among my unfinished projects, this is one that I can't get that
+    excited about any more. I've lost faith that the concepts at play here will
+    be as interesting to anyone else as they are to me. I have pages and pages
+    of design notes for the bizarrely detailed story that I wanted to have,
+    drawn maps for the rest of the facility, and proofs-of-concept for many of
+    the features I wanted to include here. But it didn't necessarily go to
+    waste, all of the ideas, techniques, and assets I made for this game are
+    things I hope to reuse.
+    <br/><br/>
+    <img class="aimage" src="rawimages/amogus7.png" style="image-rendering: pixelated">
+    <br/><br/>
+    <audio controls src="deathsong.wav" class="aimage"></audio>
+    `
+  },
+  {
+    "src": "thmb_8",
+    "title": "Space Invaders",
+    "desc": "Miniature space-invaders-inspired game",
+    "tags": ["HTML", "JavaScript", "Canvas"],
+    "git": "https://github.com/jchabin/invaders",
+    "link": "https://jchabin.github.io/invaders",
+    "article":
+    `
+    <h1>Space (Game) Jam</h1>
+    <div class="adesc">So many of my games are just "existing game with a
+    twist." I'd like to argue it's not laziness, just a weird creative process.
+    </div><br/>
+    <img class="aimage" src="images/invaders1.webp">
+    <br/><br/>
+    I've been interested in game jams for a while now, but it's often hard to
+    find jams that seem interesting, and even harder to find jams that fit
+    within my schedule. I've also been trying to get my friends to work together
+    with me in a game jam, but no luck, yet (I'm still hopeful!).
+    <br/><br/>
+    Back in 2020, I attempted a few games jams, and this is one that I finished
+    and was happy with the result. This was for the "Weekly Game Jam Week 170,"
+    and, unfortunately, this game jam, and all information related to it,
+    appears to have been deleted. All I know is that the theme was "Chain
+    Reaction."
+    <br/><br/>
+    This was the game I submitted, and although it's something that can be fully
+    experienced in abiout 15 seconds, I'd argue there's a lot of cool tech I
+    made for this that would go unnoticed if I didn't point it out. To name a
+    few: a physics engine built for this game, with smart animation/physics
+    blending, and a realtime smoke simulation also built for this game (very
+    simple, but definitely overkill for this project).
+    <br/><br/>
+    <h1>Chain reaction</h1><br/>
+    If you check out the game, it's pretty clear how this entry meets the theme.
+    After dying, ships can also collide with and destroy each other, creating
+    the potential for a board-wiping chain reaction. This works both to the
+    player's advantage and disadvantage, depending on the player's ability to
+    strategize and their luck.
+    <br/><br/>
+    This is due to my own physics engine, written specifically for this game. It
+    intentionally cuts a lot of corners in order to make this all work, but
+    isn't that the whole point of game development?
+    <br/><br/>
+    <div class="imgcenter"><img class="simg" src="images/invaders_clip0.gif"></div>
+    <div class="adesc">Okay, this GIF doesn't really show anything about the
+    game that wouldn't be clear just by playing it - but did you see me use an
+    invader as a shield at the start? That was sick.</div><br/>
+    In fact, lets take a quick look at that physics code.
+    <br/><br/>
+    <pre><code class="language-javascript">// This is the "move" function of the "invader" class, which handles movement
+// and collision tests. It is called for each invader each frame, and they are
+// passed an array of every other invader to test collisions against.
+move(others){
+
+  // The invaders have two states: alive and dead. Alive invaders will animate
+  // and slowly descend, and dead invaders will fall and behave as physics
+  // objects. Alive invaders DO still react to physics objects, but not in the
+  // same ways.
+  if(this.dead){
+    // Dead-simple movement logic, pun fully intended.
+    this.x += this.xv;
+    this.y += this.yv;
+    this.xv *= 0.99;
+    this.yv *= 0.99;
+    this.rv *= 0.995;
+    this.yv += 0.1;
+    this.rot += this.rv;
+    // These if statements check for collisions with the walls of the screen.
+    if(this.x > 128 * 4 - 52){
+      this.x = 128 * 4 - 52;
+      this.xv = -Math.abs(this.xv);
+    }
+    if(this.x < 0){
+      this.x = 0;
+      this.xv = Math.abs(this.xv);
+    }
+    if(this.y < 0){
+      this.y = 0;
+      this.yv = Math.abs(this.yv);
+    }
+    for(var i = 0; i < others.length; i++)
+      if(others[i].name != this.name) // Don't collison check against myself.
+        if(Math.hypot(others[i].y - this.y, others[i].x - this.x) < 32){
+          // Die is a confusingly-named function. It should be called "bounce,"
+          // but it's used both to bounce around dead invaders, and to kill
+          // invaders (and provide those killed invaders with initial velocity).
+
+          // Die does not necessarily kill the invader it's called on, but it
+          // does a check to determine if it should.
+          this.die(others[i]);
+          break;
+        }
+
+    // "barriers" is an array for the two green barriers at the start. Some
+    // extra logic is needed to make the physics work for them, but it's mostly
+    // identical.
+    for(var i = 0; i < barriers.length; i++)
+      if(Math.abs(barriers[i].y - 26 - this.y) < 52 && Math.abs(barriers[i].x - 26 - this.x) < 78)
+        this.die(barriers[i]);
+
+    // The smoke in the background is stored in a 2D array called "smokedata,"
+    // and every pixel in it is a particle object. set() just replaces a pixel,
+    // for the purpose of adding smoke and flames to the scene.
+    set(
+      smokedata,
+      Math.floor(6.5 + this.x / 4),
+      Math.floor(6.5 + this.y / 4),
+      new particle(Math.floor(6.5 + this.x / 4), Math.floor(6.5 + this.y / 4), this.xv, this.yv, 8)
+    );
+
+  // Movement for living invaders.
+  }else{
+    // It is possible for a living invader to have velocity, but their reaction
+    // to it should feel "muted," as if it's resisting being pushed.
+    if(this.xv || this.yv){
+      this.x += this.xv;
+      this.y += this.yv;
+      this.xv *= 0.9;
+      this.yv *= 0.9;
+      this.rv = 0;
+    }
+
+    // This is the logic for animation and movement of living invaders. "SPEED"
+    // is a constant that determines how many frames of gameplay it should take
+    // to go to the next frame in the animation, and move left/right/down.
+    if(--this.count <= 0){
+      this.count = SPEED;
+      var i;
+      for(var i = 0; i < others.length; i++)
+        if(others[i].name != this.name){
+          // Fun logic here that allows for invaders to avoid each other in
+          // flight, and for their animations to adjust to a dynamic environment
+          // in a way that's more interesting that "they all move as one block."
+          if(((this.dir == 1 && others[i].x > this.x) ||
+          (this.dir == -1 && others[i].x < this.x))
+          && Math.hypot(others[i].y - this.y, others[i].x - this.x) < 60){
+            this.dir = Math.sign(this.x - others[i].x);
+            this.x += this.dir * 4;
+            this.y += 4;
+            i = others.length + 1;
+          }
+        }
+      // Wall-bouncing logic again, but this time for animation purposes.
+      if(this.x > 128 * 4 - 15 * 4)
+        this.dir = -1;
+      if(this.x < 8)
+        this.dir = 1;
+      if(this.y < 26)
+        this.y += 4;
+      if(i == others.length)
+        this.x += this.dir * 8;
+
+      this.frame = 1 - this.frame;
+    }
+  }
+}</code></pre><br/>
+    One efficiency that should be noted is that all invaders (and bullets) are
+    simualted as circles, for the purposes of physics and collisions. Barriers,
+    on the other hand, are simulated as actual rectangles, although their
+    colliders do not rotate with them. Normally, rhis would create some
+    inaccuracies, but their weight and size makes it surprisingly hard to
+    notice such an obvious physics cheat.
+    <br/><br/>
+    <pre><code class="language-javascript">// The aforementioned "die" function. Implements an impulse response.
+die(b){
+  // These two booleans will determine the type of object being collided with.
+  var bullet = !b.name && !b.bar;
+  var barrier = b.bar;
+
+  // Gives a maximum to velocity of colliding objects. It's cheating, but it
+  // keeps physics from breaking in many cases, and is not noticable at all.
+  var M = 1 / 2; // Not used here, used later to indicate "power" of bullets.
+  var MV = 8;
+  var ve;
+  if((ve = Math.hypot(this.yv, this.xv)) > MV){
+    this.xv *= MV / ve;
+    this.yv *= MV / ve;
+  }
+
+  if((ve = Math.hypot(b.yv, b.xv)) > MV){
+    b.xv *= MV / ve;
+    b.yv *= MV / ve;
+  }
+
+  // Calculates vector for difference in velocity, and normal between colliding
+  // objects, with special cases for normals of bullets and barriers (barriers'
+  // and bullets' positions are off-center).
+  var v = [(this.xv ?? 0) - (b.xv ?? 0), (this.yv ?? 0) - (b.yv ?? (bullet ? b.dir * 16 : 0))];
+  var n = [b.x + (b.name ? 26 : barrier ? 0 : 2) - this.x - 26, b.y + (b.name ? 26 : barrier ? 0 : 8) - this.y - 26];
+  var norm = [n[0] / Math.hypot(n[1], n[0]), n[1] / Math.hypot(n[1], n[0])];
+  if(barrier)
+    norm = [0, 1];
+
+  v[0] *= norm[0]; v[1] *= norm[1];
+  var vl = Math.hypot(v[0], v[1]);
+
+  // Does actual collision response, VERY simplified formulas due to treating
+  // all objects as circular. Best example is the cross() function, I only need
+  // the Z-component of the cross product, so that's all I return.
+  this.drv = (bullet ? 0.2 : M) * cross(v[0], v[1], n[0], n[1]) * 0.0003;
+  this.rv = (this.rv ?? 0) + this.drv;
+  this.xv = (this.xv ?? 0) - M * vl * norm[0];
+  this.yv = (this.yv ?? 0) - M * vl * norm[1];
+
+  // 0.0003 is a constant that acts as an estimate for moment of inertia.
+  b.drv = M * cross(v[0], v[1], n[0], n[1]) * 0.0003;
+  b.rv = (b.rv ?? 0) + b.drv;
+  b.xv = (b.xv ?? 0) + M * vl * norm[0];
+  b.yv = (b.yv ?? 0) + M * vl * norm[1];
+
+  // Checks if "this" is a living invader, and if it either was hit by a bullet,
+  // or was hit with enough force to kill it. If so, it explodes.
+  if(!this.dead && (bullet || Math.hypot(this.yv, this.xv) > 2)){
+    this.dead = true;
+    for(var i = 0; i < 16; i++){
+      var dx = Math.floor(Math.random() * 9) - 4;
+      var dy = Math.floor(Math.random() * 9) - 4;
+      set(
+        smokedata,
+        Math.floor(6.5 + this.x / 4) + dx,
+        Math.floor(6.5 + this.y / 4) + dy,
+        new particle(Math.floor(6.5 + this.x / 4) + dx, Math.floor(6.5 + this.y / 4) + dy, 0, 0, 8)
+      );
+    }
+    score += 100;
+  }
+
+  // Same check but for the other invader being collided with.
+  if(!b.dead && !bullet && Math.hypot(b.yv, b.xv) > 2){
+    b.dead = true;
+    for(var i = 0; i < 16; i++){
+      var dx = Math.floor(Math.random() * 9) - 4;
+      var dy = Math.floor(Math.random() * 9) - 4;
+      set(
+        smokedata,
+        Math.floor(6.5 + b.x / 4 - (barrier ? 6.5 : 0)) + dx,
+        Math.floor(6.5 + b.y / 4) + dy,
+        new particle(Math.floor(6.5 + b.x / 4 - (barrier ? 6.5 : 0)) + dx, Math.floor(6.5 + b.y / 4) + dy, 0, 0, 8)
+      );
+    }
+    score += 100;
+  }
+
+}</code></pre><br/>
+    I'm choosing to view the number of corners being cut as a positive, not a
+    negative in this situation. It makes the code easier to write, and makes the
+    game more efficient!
+    <br/><br/>
+    <h1>Smoke "simulation"</h1><br/>
+    The smoke simulation is super simple.
+    <br/><br/>
+    <pre><code class="language-javascript">// This is called on each particle in the 2D array, and it's passed a refernce
+// to the entire set of particles.
+spread(map){
+  var x = this.x, y = this.y;
+  var tcol = this.col; // .col is the value of that particle.
+  // Higher values mean smoke or even fire.
+
+  var dw = get(smokedata, x, y - 1).col;
+  var da = get(smokedata, x - 1, y).col;
+  var ds = get(smokedata, x, y + 1).col;
+  var dd = get(smokedata, x + 1, y).col;
+  var sum = dw + da + ds + dd;
+
+  // Makes smoke fade away slightly faster, looks nicer.
+  if(tcol < 1)
+    sum *= Math.random() + 0.45;
+
+  var m = get(map, x, y);
+  // Literally just gets the average of adjacent particles, with a random amount
+  // of decay applied. 4 + [0, 2.5) = [4, 6.5). The sum of 5 values is, on
+  // average, divided by 5.25, meaning it does slightly decay, but in a way that
+  // looks textured and interesting!
+  m.col = Math.max((m.col + sum) / (4 + Math.random() * 2.5), 0);
+}</code></pre><br/>
+    That's the whole simulation. I wish I had something interesting to say in
+    addition to this code, but that's pretty much it.
+    <br/><br/>
+    <h1>Conclusion</h1><br/>
+    I'm pretty sure I didn't win the game jam, but everyone who commented seems
+    to have liked it. If I wanted to really revisit this, I'd love to set up
+    music and sound effects, I'd love to rewrite the physics engine to be a
+    little less hardcoded, and I'd love to add new gameplay features so that the
+    gameplay loop is more complicated and interesting than "shoot up until you
+    die."
+    <br/><br/>
+    <img class="aimage" src="images/invaders0.webp">
+    `
+  },
+];
+
+const tags_defs = {
+  "HTML": "#f06529",
+  "JavaScript": "#f7df1e",
+  "Canvas": "#9bdc10",
+  "Firebase": "#ffca28",
+  "OpenGL": "#5586a4",
+  "C": "#659bd3",
+  "THREE.js": "#fff",
+  "VR": "#42f55a",
+  "NodeJS": "#68a063",
+  "Python": "#4584b6",
+  "WebSocket": "#ff6600",
+  "Blender": "#e87d0d"
+};
+
+function getColor(s){
+  if(s in tags_defs)
+    return tags_defs[s];
+  console.log(s);
+  var o = 0;
+  for(var i = 0; i < s.length; i++)
+    o = (o * 5 + s.charCodeAt(i)) % 360;
+  return `hsl(${o % 360}, 100%, 75%)`;
+}
+
+var orient = "landscape";
+
+function renderProjects(tagSearch){
+
+  document.getElementById("aclose").onclick = () => {
+    document.getElementById("articlecont").className = "";
+    history.replaceState({}, "", "?projects" + (tagSearch == -1 ? "" : "&tag=" + tagSearch));
+  }
+
+  document.getElementById("pcont").innerHTML = "";
+
+  if(tagSearch != -1){
+    let d = document.createElement("DIV");
+    d.id="searchtag";
+    d.innerHTML = `Showing projects with tag
+    <div class="tag" style="background: ${getColor(tagSearch)}" onclick="
+    history.replaceState({}, '', '?projects');
+    tagSearch=-1;
+    renderProjects(tagSearch);
+    ">${tagSearch}<div class="minix">&#x2715;</div></div>`;
+    document.getElementById("pcont").appendChild(d);
+  }
+
+  var nCols = window.innerWidth < window.innerHeight ? 2 : 4;
+  orient = window.innerWidth < window.innerHeight ? "portrait" : "landscape";
+  var cols = [];
+  for(var i = 0; i < nCols; i++){
+    let c = document.createElement("DIV");
+    c.className = "column";
+    document.getElementById("pcont").appendChild(c);
+    cols.push(c);
+  }
+  var ii = 0;
+  for(var i = 0; i < projectsdata.length; i++){
+    let proj = projectsdata[i];
+
+    if(tagSearch != -1 && !proj.tags.includes(tagSearch)){
+      continue;
+    }
+
+    let pm = document.createElement("DIV");
+    pm.className = "pm";
+    pm.id = "pm" + i;
+    let localIndex = i;
+    pm.innerHTML = `
+      <img src="images/${proj.src}.webp" class="pt">
+      <div class="ph">${proj.title}</div>
+      <div class="pd">${proj.desc}</div>
+      <div class="tags">${proj.tags.reduce((a, b) =>
+        a + `<div class="tag" style="background: ${getColor(b)}"
+        onclick="
+        event.stopPropagation();
+        history.replaceState({}, '', '?projects&tag=${b}');
+        tagSearch='${b}';
+        renderProjects(tagSearch);
+        ">${b}</div>`
+      , "")}</div>
+    `;
+    pm.onclick = () => {
+      document.getElementById("articletext").innerHTML = proj.article;
+      hljs.highlightAll();
+
+      document.getElementById("alink").style.display = proj.link ? "" : "none";
+      document.getElementById("alink").onclick = () => { window.open(proj.link) };
+      document.getElementById("agit").style.display = proj.git ? "" : "none";
+      document.getElementById("agit").onclick = () => { window.open(proj.git) };
+
+      document.getElementById("articlecont").className = "open";
+      document.getElementById("article").scrollTop = 0;
+
+      history.replaceState({}, "", "?project=" + localIndex);
+    };
+
+    // let m = 0;
+    // for(var n = 1; n < nCols; n++)
+    //   if(cols[n].clientHeight < cols[m].clientHeight)
+    //     m = n;
+    // console.log(cols[m].clientHeight, m);
+    // cols[m].appendChild(pm);
+
+    cols[ii++ % nCols].appendChild(pm);
+  }
+}
+    </script>
+  </head>
+  <body>
+    <div class="slide one">
+      <div class="title">Johnny Chabin</div>
+      <div class="text">Software Developer, Game Developer,<br/>Occasionally an Artist</div>
+      <div class="buttonscont">
+        <div class="button clickable" onclick="resume()">Resume</div><br/>
+        <div class="button clickable" style="position: relative; z-index: 1;" onclick="toggleSkills()">Skills</div>
+        <div id="skillspanel"></div><br/>
+        <div class="button clickable" onclick="projects()">Projects</div>
+      </div>
+      <div id="bio">
+        <p>
+          I'm a <span id="age">00</span> year-old software and game
+          developer from Colorado. I graduated from CU Boulder in 2022 as a
+          Bachelor of Science in Computer Science, two years early, thanks to AP
+          classes, summer classes, and concurrent enrollment.
+        </p>
+        <p>
+          After graduating, I moved to Utah to work as a Software
+          Development Engineer at Amazon, and have been working there since.
+          I've excelled in my role, and gone above and beyond what is expected
+          of me.
+        </p>
+        <p>
+          In my free time, I love working on personal games, projects, and
+          sometimes art, skiing, playing Motorstorm, and listening to weird
+          music.
+        </p>
+      </div>
+    </div>
+    <div id="projects">
+      <div class="ptitle">Some Awesome Projects</div>
+      <div id="cproj" onclick="closeprojects()">&#x2715;</div>
+      <div id="pcont"></div>
+    </div>
+    <div id="articlecont">
+      <div id="article">
+        <div id="articlecontrols">
+          <div class="amc try" id="alink">Try it here!</div>
+          <div class="amc git" id="agit"></div>
+          <div class="amc close" id="aclose">&#x2715;</div>
+        </div>
+        <div id="articletext"></div>
+      </div>
+    </div>
+    <script>
+      var mobile = navigator.userAgent.match("Mobile")!=null||navigator.userAgent.match("Linux;")!=null;
+      document.getElementById("mobilestyle").disabled = !mobile;
+
+      var tagSearch = -1;
+
+      renderProjects(-1);
+
+      if(location.href.split("?")[1]){
+        let l = location.href.split("?")[1].split("&");
+        if(l[0] == "projects"){
+          document.getElementById("projects").className = "open";
+          if(l[1] && l[1].split("=")[0] == "tag"){
+            tagSearch = l[1].split("=")[1];
+          }
+        } else if(l[0].split("=")[0] == "project"){
+          document.getElementById("projects").className = "open";
+          document.getElementById("pm" + l[0].split("=")[1]).click();
+        }
+      }
+
+      renderProjects(tagSearch);
+
+      for(var i in tags_defs){
+        let t = document.createElement("DIV");
+        t.className = "tag clickable";
+        let li = i;
+        t.onclick = () => {
+          event.stopPropagation();
+          history.replaceState({}, '', `?projects&tag=${li}`);
+          tagSearch = li;
+          renderProjects(tagSearch);
+          document.getElementById("projects").className = "open";
+        }
+        t.innerHTML = i;
+        t.style.background = getColor(i);
+        document.getElementById("skillspanel").appendChild(t);
+      }
+    </script>
+    <script src="script.js"></script>
+  </body>
+</html>

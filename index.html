@@ -466,7 +466,7 @@ function startPlayer(){
     The fractals themselves are actually very simple to generate. In the same
     way I can use a modulus on the 3D position to make space loop, I can
     repeatedly scale and reflect space to make a fractal. To render a fractal
-    correctly, this repetetive step should run an infinite number of times - but
+    correctly, this repetitive step should run an infinite number of times - but
     we haven't got all day. Because every iteration makes smaller and smaller
     details, only a relatively small number of iterations are required for any
     additional iterations to be smaller than a pixel.
@@ -476,12 +476,12 @@ function startPlayer(){
     A much better-shaded fractal, showing off a basic volumetric system.
     </div><br/>
     Volumetrics were another thing that only shows up rarely in my renders, as
-    it tends to have pretty noticable artifacts, runs very slow, and doesn't
+    it tends to have pretty noticeable artifacts, runs very slow, and doesn't
     usually look all that great. But in this case, I think it looks great. If
     you look carefully on the "overhanging" parts of the shape you can see it
     does actually cast shadows as expected.
     <br/><br/>
-    Since then I've re-implemented volumentrics more efficiently and with better
+    Since then I've re-implemented volumetrics more efficiently and with better
     accuracy, such that it no longer creates large bands!
     <br/><br/>
     <h1>Leaving ShaderToy</h1><br/>
@@ -490,7 +490,7 @@ function startPlayer(){
     graphics class, I took this existing shader and implemented it in OpenGL
     using C. As part of this migration, I added some additional features, like
     an actual GUI! In the spirit of DIY-ing everything in this project so far,
-    I wrote theb UI with my own data types and classes, and rendered it myself
+    I wrote the UI with my own data types and classes, and rendered it myself
     with primitives in OpenGL.
     <br/><br/>
     <img class="aimage" src="images/fractal5.webp">
@@ -529,8 +529,8 @@ function startPlayer(){
     </div><br/>
     Another fun feature to implement here was some basic dithering! Now that I'm
     in plain OpenGL, I can render with a much greater color depth than I can
-    even see on my screen. Because this data is eventually lost eventually, I
-    use a post-processing shader to test the fractional component of each color
+    even see on my screen. Because this data is lost eventually, I use a
+    post-processing shader to test the fractional component of each color
     channel against a blue noise texture to decide which way to round the color.
     This simple check does a great job of removing color banding, but it also
     allows me to render in an even smaller color space, usually just for fun.

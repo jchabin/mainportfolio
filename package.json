@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "sharp": "0.33.2",
+    "express": "4.17.1"
+  }
+}

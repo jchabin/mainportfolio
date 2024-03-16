@@ -731,8 +731,8 @@ function startPlayer(){
     users today. This is also a very pessimistic lower bound for annual unique
     users.
     <br/><br/>
-    Let's dive deeper. Re-using that $219$ users were created in a
-    single day, we can extrapolate that to a whole year with
+    Let's dive deeper. Re-using that 219 users were created in a single day, we
+    can extrapolate that to a whole year with
     <div class="amath">219 * 5 * 36 = 39420</div> (36 is the minimum required
     weeks of school in most states). This implies that
     <div class="amath">55181 - 39420 = 15761</div> users were signed in on
@@ -1009,12 +1009,12 @@ function recalc(p){
     fix, but I don't have much confidence.
     <br/><br/>
     <h1>Conclusion</h1><br/>
-    This is a game I like to show off to people who are very good at chess,
+    This is a game I like to show off to people who are very good at chess
     because they're usually the biggest fans of needlessly complicated versions
     of chess. I've considered making more games like this, because I found it
-    really fun to develop, I liked solving the complexities created by this
-    project, but I'm sure what other ideas would actually end up working as well
-    as this one did. Keep your eyes open for some more projects that are
+    really fun to develop, and I liked solving the complexities created by this
+    project, but I'm not sure what other ideas would actually end up working as
+    well as this one did. Keep your eyes open for some more projects that are
     conceptually similar.
     `
   },
@@ -1033,7 +1033,7 @@ function recalc(p){
     disconnecting themselves, and bluetooth connections seem to be laggy and
     setting up the connections always takes several tries to work.
     <br/><br/>
-    This project is designed to solve that issue, by replacing inconvenient and
+    This project is designed to solve that issue by replacing inconvenient and
     inconsistent controllers with uncomfortable phone controllers. This is an
     idea I already explored in my Asteroids game, but this is an entirely new
     project without any shared code. I added a lot of cool features into this
@@ -1048,9 +1048,9 @@ function recalc(p){
     controller layout files.
     <br/><br/>
     Controller layouts are both saved as a file and updated over WebSockets as
-    JSON files, which makes it easily pareseable by all of my scripts. If I
+    JSON files, which makes it easily parseable by all of my scripts. If I
     wanted to add an entirely new button, all I would have to do is create an
-    object for it in the layout JSON, and define to the Python script how to
+    object for it in the layout JSON and define to the Python script how to
     implement those inputs.
     <br/><br/>
     <pre><code class="language-javascript">// The default controller layout, it has one joystick and two buttons onscreen
@@ -1104,9 +1104,9 @@ function recalc(p){
   }
 ]</code></pre><br/>
     The coolest effect of all these features working together is that I can
-    modify controllers per-game on the fly, AND I can even see it update on the
+    modify controllers per-game on the fly, <em>and</em> I can even see it update on the
     phone screens in realtime! Very few games need all the controls at once, so
-    being able to change which ones are includes, and where they are positioned
+    being able to change which ones are included, and where they are positioned
     on the screen, <em>without</em> needing to relaunch anything, makes for a
     very smooth experience.
     <br/><br/>
@@ -1212,13 +1212,13 @@ asyncio.run(waitForControls())</code></pre><br/>
     "A" was mapped to gas, "B" was mapped to brake/drift, and "X" was mapped to
     the item button.</div></br>
     I've tested this across multiple softwares, and I've yet to find one that
-    fails to recognize this as a valid controller. The ability to add and
-    remove controllers by will, using existing hardware that most people own,
-    the ability to reshape the layouts of those controllers, all in real-time
-    and synchronized, and the fact that this whole project can do this with
-    better reliability than USB or bluetooth controller connections, is what I
-    like so much about this project. It all ends up feeling like a very elegant
-    solution to a problem I've dealt with a lot.
+    fails to recognize this as a valid controller. What I find so cool about
+    this is the ability to add and remove controllers remotely, using existing
+    hardware that most people own, the ability to reshape the layouts of those
+    controllers, all in real-time and synchronized, and the fact that this whole
+    project can do this with better reliability than USB or bluetooth controller
+    connections. It all ends up feeling like a very elegant solution to a
+    problem I've dealt with a lot.
     `
   },
   {
@@ -1237,26 +1237,26 @@ asyncio.run(waitForControls())</code></pre><br/>
     my objectively correct opinion). This game is notable for having a large
     variety of vehicle classes, and almost all races have a mix of vehicle
     classes to make a more exciting experience. While different classes vary
-    greatly in handling, all of them are designed to feel unweildy and difficult
-    to control, while driving over uneven, bumpy, terrain, on narrow tracks with
+    greatly in handling, all of them are designed to feel unwieldy and difficult
+    to control, while driving over uneven, bumpy terrain, on narrow tracks with
     poor traction. The game is challenging and brutal, and I love it.
     <br/><br/>
-    <img class="aimage" src="images/motorstorm1.webp" fetchpriority="highest">
+    <img class="aimage" src="images/motorstorm1.webp">
     <br/><br/>
     The base game has eight tracks, but "The Grizzly" is distinctly the main
-    track. "The Grizzly" is the longest track in the game, and is treated like
-    the most important track in the game by repeatedly using it as a closer to a
-    set of races. "The Grizzly" is also the only track in the main game where
-    the player can choose their own vehicle class, instead of having one
-    assigned by the event. This means the track has an especially large number
-    of routes and variety of driving options, so that any combination of
-    vehciles will still be fun.
+    track. "The Grizzly" is the longest track in the game and is treated like
+    the most important track by repeatedly using it as a closer to a set of
+    races. "The Grizzly" is also the only track in the main game where the
+    player can choose their own vehicle class, instead of having one assigned by
+    the event. This means the track has an especially large number of routes and
+    variety of driving options, so that any combination of vehicles will still
+    be fun.
     <br/><br/>
     For a while I've been interested in Mario Kart 8 modding, especially due to
     the relative ease and availability of tools like
     <a href="https://mapstudioproject.github.io/TrackStudioDocs/index.html" target="_blank">Track Studio</a>.
     In the past I practiced by making a Delfino Square mod using that software -
-    definitely unfinshed, but still fun to play.
+    definitely unfinished, but still fun to play.
     <br/><br/>
     <img class="aimage" src="images/motorstorm2.webp">
     <img class="aimage" src="images/motorstorm3.webp">
@@ -1265,14 +1265,13 @@ asyncio.run(waitForControls())</code></pre><br/>
     textures are ripped from base Mario Kart 8 (many are modfied), but all
     models were hand-modeled, with the exceptions of the tree model, and the
     Pianta Statue. I also went out of my way to add extra paths to the map, and
-    to integrate some Mario Kart 8 features (like zero-graviity), which I would
-    personally argue are essential for any good Mario Kart 8 port - which is
-    something that I'll bring up again when discussing "The Grizzly."</div><br/>
+    to integrate some Mario Kart 8 features (like zero-gravity), which I would
+    personally argue are essential for any good Mario Kart 8 port.</div><br/>
     I discovered the software
     <a href="https://ninjaripper.com/" target="_blank">Ninja Ripper</a>, and
     found that an old version of this software supported
     <a href="https://rpcs3.net/" target="_blank">RPCS3</a>, a PS3 emulator. I
-    don't kow exactly how NinjaRipper works, as it's closed-source, but the way
+    don't know exactly how NinjaRipper works, as it's closed-source, but the way
     their project is described, it seems like it intercepts all OpenGL calls and
     re-constructs the original geometry out of that. Once I got this software
     installed and set up, it actually worked immediately - but it also presented
@@ -1286,7 +1285,7 @@ asyncio.run(waitForControls())</code></pre><br/>
     rotated, scaled, and skewed into an incredibly uncomfortable position. I was
     able to get it mostly upright and shaped correctly through trial and error,
     and then I could use the perfectly circular skybox and perfectly circular
-    vehicle wheels as a reference to make it near-perfect.
+    vehicle wheels as a reference to make it near perfect.
     <br/><br/>
     <h1>2) Culling</h1><br/>
     MotorStorm takes heavy advantage of culling to improve performance, and
@@ -1304,8 +1303,7 @@ asyncio.run(waitForControls())</code></pre><br/>
     to just work around it at first, but some of the gaps were multiple meters
     wide. For this, I had to write a Python script in Blender. I'm actually
     pretty proud of how this worked out - I select four reference vertices in
-    both captures, and then could line them up <em>perfectly</em> with this
-    script.
+    both captures and line them up <em>perfectly</em> with this script.
     <br/><br/>
     <pre><code class="language-python"># There's an obj1 and an obj2, this script moves obj2 onto obj1.
 # This was unfortunately difficult to figure everything out, because apparently
@@ -1358,19 +1356,19 @@ for obj in sel_objs:
     <h1>4) Duplicate geometry</h1><br/>
     NinjaRipper would grab any geometry that is onscreen at the time, but
     unfortunately this also means that a lot of geometry is onscreen in multiple
-    captures, leading to duplicate geometry. This wasn't a minor issue - the
+    captures, leading to duplicates. This wasn't a minor issue - the
     majority of the geometry in the track was duplicated at least twice. I
-    wasn't able to come up with any easy fix for this - I had to, for each
-    object, check for duplicate objects, and delete them. I split this across
-    several days, but did eventually finish it.
+    wasn't able to come up with any easy fix for this. For each object I had to
+    check for duplicate objects and delete them. I split this across several
+    days but did eventually finish it.
     <br/><br/>
     <h1>5) Broken textures</h1><br/>
-    I'm not sure if this is a NinjaRipper bug, or some quirk with how MotorStorm
+    I'm not sure if this is a NinjaRipper bug or some quirk with how MotorStorm
     or RPCS3 is using textures, but nearly every single texture in the game had
-    color channels swapped, seemingly at random, and offset horizontally, by an
-    amount exactly equal to 1/3 of the height. Given that there were some
-    800-ish textures, this was not something I wanted to manually photoshop for
-    each one, so I wrote some scripts to fix this issue.
+    color channels swapped at random, and offset horizontally by an amount
+    exactly equal to 1/3 of the height. Given that there were some 800-ish
+    textures, this was not something I wanted to manually photoshop for each
+    one, so I wrote some scripts to fix this issue.
     <br/><br/>
     <pre><code class="language-javascript">// Simple NodeJS script to take a folder of images, and offset their x-position
 // by 1/3rd of the image height. If you somehow find this script useful, feel
@@ -1404,9 +1402,9 @@ fs.readdirSync("./input2").forEach(file => {
 });
 
 console.log("\\n\\x1b[92mDone\\x1b[0m");</code></pre>
-    <br/><br/>
+    <br/>
     That first script only fixes their positioning, but they were still
-    discolored. Becuase there was no observable pattern to the RGB shifting,
+    discolored. Because there was no observable pattern to the RGB shifting,
     this second script creates a UI for me to, one-by-one, select the correct
     image from a list of options.
     <br/><br/>
@@ -1533,7 +1531,7 @@ app.get("/choose", (req, res) => {
 
 app.listen(80);
 
-console.log("\\n\\x1b[92mReady!\\x1b[0m");</code></pre><br/><br/>
+console.log("\\n\\x1b[92mReady!\\x1b[0m");</code></pre><br/>
     <h1>6) Broken materials</h1>
     <div class="adesc">Wait, I'm not done yet?</div><br/>
     NinjaRipper has another issue (shocker), which is that it does not
@@ -1548,9 +1546,8 @@ console.log("\\n\\x1b[92mReady!\\x1b[0m");</code></pre><br/><br/>
     one or more terrain models, using heightmaps, and multiple regular  models,
     usually duplicated multiple times although often deformed. The regular
     models are no problem, as everything I've done so far was designed to work
-    with them. But the terrain has a second issue, which is that they have
-    multiple sets of textures that are interpolated between based on vertex
-    colors.
+    with them. But the terrain has a second issue, which is that the terrain
+    interpolates between multiple sets of textures based on vertex colors.
     <br/><br/>
     <img class="aimage" src="images/motorstorm6.webp">
     <div class="adesc">Take a look at how there are two distinct textures on the
@@ -1564,7 +1561,7 @@ console.log("\\n\\x1b[92mReady!\\x1b[0m");</code></pre><br/><br/>
     to mix between multiple ground textures.
     <br/><br/>
     <div class="imgcenter"><img class="simg" src="images/motorstorm7_thmb.webp"></div>
-    <div class="adesc">See how this is the same textures being mixed as in the
+    <div class="adesc">See how these are the same textures being mixed as in the
     screenshot above? Ignore difference in color balance, that's postprocessing
     in MotorStorm.</div><br/>
     This combined material actually does a great job of imitating the same
@@ -1573,13 +1570,13 @@ console.log("\\n\\x1b[92mReady!\\x1b[0m");</code></pre><br/><br/>
     rockier sections, and for vertically-raised sections.
     <br/><br/>
     Unfortunately, that's where I have to stop. I'm still in the middle of
-    fixing all the materials in the model, and there's further issues that I
+    fixing all the materials in the model, and there are further issues that I
     haven't even started on yet. Many of the models have completely broken UVs
     that I'll have to fix manually, the game uses billboard grass textures,
-    which I cannot replicate correctly in Mario Kart 8, there are still some
+    which I cannot replicate correctly in Mario Kart 8, there is still some
     missing geometry which I need to recapture, and I need to figure out how to bake
-    shadows and lights into the Mario Kart 8. But the work I've done so far I
-    think looks great.
+    shadows and lights into the Mario Kart 8. But I think the work I've done so
+    far looks great.
     <br/><br/>
     <img class="aimage" src="images/motorstorm9.webp">
     <img class="aimage" src="images/motorstorm0.webp">

@@ -2,9 +2,24 @@
 <html lang="en">
   <head>
     <title>Johnny Chabin</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@900&family=Roboto&display=swap" rel="stylesheet">
+    <style>
+      @font-face {
+        font-family: Roboto;
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url(fonts/roboto.woff2) format('woff2');
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+      @font-face {
+        font-family: Inter;
+        font-style: normal;
+        font-weight: 900;
+        font-display: swap;
+        src: url(fonts/inter.woff2) format('woff2');
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+    </style>
     <link rel="stylesheet" href="style.css">
     <style id="mobilestyle">
       .title{
@@ -70,8 +85,8 @@
         cursor: pointer;
       }
     </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/sunburst.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <link rel="stylesheet" href="highlight/sunburst.min.css">
+    <script src="highlight/highlight.min.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, minimum-scale=1.0">
     <meta
       name="description"

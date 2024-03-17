@@ -1661,7 +1661,7 @@ console.log("\\n\\x1b[92mReady!\\x1b[0m");</code></pre><br/>
     I made the entire map out of brightly colored blocks.
     <br/><br/>
     <img class="aimage" src="images/lizards1.webp">
-    <div class="adesc">Zoomed out version a game map.</div><br/>
+    <div class="adesc">Zoomed out version of a game map.</div><br/>
     The generation is very simple - starting at the center, generate a rectangle
     of a random color, and then add the sides of the rectangle to queue.
     Repeatedly generate new rectangles by pulling from that queue until 200 have
@@ -1670,7 +1670,7 @@ console.log("\\n\\x1b[92mReady!\\x1b[0m");</code></pre><br/>
     As more rectangles are generated, it becomes more likely for some, or all,
     of a rectangle's sides to not be added to the queue.
     <br/><br/>
-    Each rectangles' color should be the color of the one it's attached to, plus
+    Each rectangle's color should be the color of the one it's attached to, plus
     a random value (generated with a color wheel, so values are % 360). As the
     rectangles are generated further from the center, the random color offset
     gets smaller and smaller.

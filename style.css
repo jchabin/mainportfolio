@@ -103,7 +103,7 @@ body{
   margin: 1vmin;
   margin-left: -2vmin;
   margin-right: 0;
-  padding: 1vmin 2vmin 1vmin 8vmin;
+  padding: 12px 24px 12px 8vmin;
   color: var(--accent1);
   border: .2vmin solid var(--accent1);
   display: inline-block;

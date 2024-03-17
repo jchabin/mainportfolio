@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <title>Johnny Chabin</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -72,7 +72,11 @@
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/sunburst.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, minimum-scale=1.0">
+    <meta
+      name="description"
+      content="Here's my portfolio. It's got my resume, some info about me,
+               and a lot of my favortite projects that I've worked on!">
     <script>
 const projectsdata = [
   {
@@ -2389,7 +2393,7 @@ function renderProjects(tagSearch){
     pm.id = "pm" + i;
     let localIndex = i;
     pm.innerHTML = `
-      <img src="images/${proj.src}.webp" class="pt">
+      <img src="images/${proj.src}.webp" class="pt" alt="">
       <div class="ph">${proj.title}</div>
       <div class="pd">${proj.desc}</div>
       <div class="tags">${proj.tags.reduce((a, b) =>

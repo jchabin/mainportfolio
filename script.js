@@ -4,6 +4,17 @@ const mouse = {x: -50, y: -50, l: false, r: false};
 
 document.getElementById("age").innerText = new Date(Date.now() - new Date("2002-04-30T23:02:00.0006")).getUTCFullYear() - 1970;
 
+for(var i = 0; i < projectsdata.length; i++){
+  let m = projectsdata[i].article.match(/"[^"\.]+\.\w+"/)[0];
+  if(m){
+    m = m.replaceAll("\"", "");
+    let l = document.createElement("LINK");
+    l.rel = "prefetch";
+    l.href = m;
+    document.head.appendChild(l);
+  }
+}
+
 function chainTrail(){
   for(var n = 1; n < trail.length; n++){
     let l = Math.hypot(trail[n].x - trail[n - 1].x, trail[n].y - trail[n - 1].y);

@@ -95,6 +95,7 @@
     <script>
 const projectsdata = [
   {
+    "id": "asteroids",
     "src": "thmb_0",
     "title": "Asteroids",
     "desc": "Local multiplayer versus shooter",
@@ -389,6 +390,7 @@ function startPlayer(){
     `
   },
   {
+    "id": "fractal",
     "src": "thmb_1",
     "title": "Custom Fractal Renderer",
     "desc": "3D Renderer that beautifully renders complex shapes with SDFs",
@@ -569,6 +571,7 @@ function startPlayer(){
     `
   },
   {
+    "id": "racinggame",
     "src": "thmb_2",
     "title": "Online Racing Game",
     "desc": "Tiny multiplayer racing game",
@@ -718,7 +721,7 @@ function startPlayer(){
     <div class="aquote">"These anonymous sessions can be configured to last
     days, weeks, months, even years… until the user logs in with a permanent
     login method or clears her browser cache." -
-    <a href="https://stackoverflow.com/a/47856621" target="_blank">Stack Overflow</a>
+    <a href="https://stackoverflow.com/a/47856621" target="_blank">Some guy named Ben on Stack Overflow</a>
     </div><br/>
     This answer is corroborated by every other answer I see about Firebase
     anonymous users on web. Unless my users are repeatedly clearing their
@@ -820,6 +823,7 @@ u();</code></pre>
     `
   },
   {
+    "id": "chess",
     "src": "thmb_3",
     "title": "Quantum Chess",
     "desc": "Needlessly complicated version of chess",
@@ -1038,6 +1042,7 @@ function recalc(p){
     `
   },
   {
+    "id": "lan",
     "src": "thmb_4",
     "title": "LAN Phone Controllers",
     "desc": "Simple web app to use phones as XInput Gamepads",
@@ -1054,9 +1059,11 @@ function recalc(p){
     <br/><br/>
     This project is designed to solve that issue by replacing inconvenient and
     inconsistent controllers with uncomfortable phone controllers. This is an
-    idea I already explored in my Asteroids game, but this is an entirely new
-    project without any shared code. I added a lot of cool features into this
-    project that I really think are worth showing off, though.
+    idea I already explored in my
+    <div class="swapbutton" onclick="swap('asteroids')">Asteroids game</div>,
+    but this is an entirely new project without any shared code. I added a lot
+    of cool features into this project that I really think are worth showing
+    off, though.
     <br/><br/>
     <h1>Architecture</h1>
     <img class="aimage" src="images/lan_diagram.webp"><br/>
@@ -1241,6 +1248,7 @@ asyncio.run(waitForControls())</code></pre><br/>
     `
   },
   {
+    "id": "motorstorm",
     "src": "thmb_5",
     "title": "MotorStorm Track Rip",
     "desc": "Rip of \"The Grizzly\" from MotorStorm to eventually be used as a track mod for Mario Kart 8",
@@ -1608,6 +1616,7 @@ console.log("\\n\\x1b[92mReady!\\x1b[0m");</code></pre><br/>
     `
   },
   {
+    "id": "lizards",
     "src": "thmb_6",
     "title": "Invisible Lizard Hunter",
     "desc": "Procedurally-generated top-down shooter",
@@ -1736,12 +1745,12 @@ console.log("\\n\\x1b[92mReady!\\x1b[0m");</code></pre><br/>
     attack "animation" more visually interesting, and it makes lizards avoid
     forming single-file lines when attacking in groups.
     <br/><br/><h1></h1><br/>
-    The way lizards are spawned, while random, has an interesting distribution.
+    The way lizards are spawned, while random, has an intentional distribution.
     Lizards spawn more frequently near the edges. This both ensures the player
     is not killed immediately after spawning, but also makes the game get harder
     as you play through it. This increase in difficulty was mentioned before
     when talking about map generation, but I'll soldify the concept with the
-    next, and most interesting, section.
+    next, and my favorite, section.
     <br/><br/>
     <h1>Color-changing</h1><br/>
     The most unique aspect of the game is that the lizards change color to
@@ -1802,6 +1811,7 @@ console.log("\\n\\x1b[92mReady!\\x1b[0m");</code></pre><br/>
     `
   },
   {
+    "id": "amogus",
     "src": "thmb_7",
     "title": "\"Amogus Funkin\"",
     "desc": "Subversive parody-horror game",
@@ -2047,6 +2057,7 @@ for(var i = 0; i < nd.length; i++){
     `
   },
   {
+    "id": "invaders",
     "src": "thmb_8",
     "title": "Space Invaders",
     "desc": "Miniature space-invaders-inspired game",
@@ -2179,7 +2190,7 @@ move(others){
         if(others[i].name != this.name){
           // Fun logic here that allows for invaders to avoid each other in
           // flight, and for their animations to adjust to a dynamic environment
-          // in a way that's more interesting that "they all move as one block."
+          // in a way that's more interesting than "they all move as one block."
           if(((this.dir == 1 && others[i].x > this.x) ||
           (this.dir == -1 && others[i].x < this.x))
           && Math.hypot(others[i].y - this.y, others[i].x - this.x) < 60){
@@ -2322,16 +2333,15 @@ spread(map){
   // looks textured and interesting!
   m.col = Math.max((m.col + sum) / (4 + Math.random() * 2.5), 0);
 }</code></pre><br/>
-    That's the whole simulation. I wish I had something interesting to say in
-    addition to this code, but that's pretty much it.
+    That's the whole simulation. I wish I had something else to say in addition
+    to this code, but that's pretty much it.
     <br/><br/>
     <h1>Conclusion</h1><br/>
     I'm pretty sure I didn't win the game jam, but everyone who commented seems
     to have liked it. If I wanted to really revisit this, I'd love to set up
     music and sound effects, I'd love to rewrite the physics engine to be a
     little less hardcoded, and I'd love to add new gameplay features so that the
-    gameplay loop is more complicated and interesting than "shoot up until you
-    die."
+    gameplay loop is more complicated and unique than "shoot up until you die."
     <br/><br/>
     <img class="aimage" src="images/invaders0.webp">
     `
@@ -2405,8 +2415,7 @@ function renderProjects(tagSearch){
 
     let pm = document.createElement("DIV");
     pm.className = "pm";
-    pm.id = "pm" + i;
-    let localIndex = i;
+    pm.id = proj.id;
     pm.innerHTML = `
       <img src="images/${proj.src}.webp" class="pt" alt="">
       <div class="ph">${proj.title}</div>
@@ -2433,7 +2442,7 @@ function renderProjects(tagSearch){
       document.getElementById("articlecont").className = "open";
       document.getElementById("article").scrollTop = 0;
 
-      history.replaceState({}, "", "?project=" + localIndex);
+      history.replaceState({}, "", "?project=" + proj.id);
     };
 
     // let m = 0;
@@ -2445,6 +2454,13 @@ function renderProjects(tagSearch){
 
     cols[ii++ % nCols].appendChild(pm);
   }
+}
+
+function swap(id){
+  document.getElementById("articlecont").className = "";
+  setTimeout(() => {
+    document.getElementById(id).click();
+  }, 500);
 }
     </script>
   </head>
@@ -2510,7 +2526,7 @@ function renderProjects(tagSearch){
           }
         } else if(l[0].split("=")[0] == "project"){
           document.getElementById("projects").className = "open";
-          document.getElementById("pm" + l[0].split("=")[1]).click();
+          document.getElementById(l[0].split("=")[1]).click();
         }
       }
 

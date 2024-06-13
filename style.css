@@ -456,3 +456,17 @@ li::marker {
 .buttonscont{
   line-height: 0;
 }
+.swapbutton{
+  background: var(--accent1);
+  display: inline-block;
+  padding: 0 3px 0 3px;
+  border-radius: 4px;
+  vertical-align: middle;
+  color: black;
+  transform: translateY(-2px);
+  cursor: pointer;
+}
+.swapbutton:hover{
+  border: 2px solid white;
+  margin: -2px;
+}

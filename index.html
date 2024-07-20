@@ -2454,6 +2454,17 @@ function renderProjects(tagSearch){
 
     cols[ii++ % nCols].appendChild(pm);
   }
+
+  if(ii == 0){
+    for(var col of cols){
+      col.remove();
+    }
+    let sorry = document.createElement("DIV");
+    sorry.innerHTML = "I haven't posted about any projects I've made with that on here...";
+    sorry.id = "sorry";
+    sorry.className = "text";
+    document.getElementById("pcont").appendChild(sorry);
+  }
 }
 
 function swap(id){
@@ -2522,11 +2533,11 @@ function swap(id){
         if(l[0] == "projects"){
           document.getElementById("projects").className = "open";
           if(l[1] && l[1].split("=")[0] == "tag"){
-            tagSearch = l[1].split("=")[1];
+            tagSearch = decodeURIComponent(l[1].split("=")[1]);
           }
         } else if(l[0].split("=")[0] == "project"){
           document.getElementById("projects").className = "open";
-          document.getElementById(l[0].split("=")[1]).click();
+          document.getElementById(decodeURIComponent(l[0].split("=")[1])).click();
         }
       }
 

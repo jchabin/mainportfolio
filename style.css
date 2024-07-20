@@ -470,3 +470,8 @@ li::marker {
   border: 2px solid white;
   margin: -2px;
 }
+#sorry{
+  text-align: center;
+  color: #222;
+  margin-top: 30vmin;
+}

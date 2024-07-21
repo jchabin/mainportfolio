@@ -87,6 +87,9 @@
       .button{
         cursor: pointer;
       }
+      .iconcont{
+        border: 2.5px solid white;
+      }
     </style>
     <link rel="stylesheet" href="highlight/sunburst.min.css">
     <script src="highlight/highlight.min.js"></script>
@@ -2488,22 +2491,18 @@ function swap(id){
         <div class="button clickable" onclick="projects()">Projects</div>
       </div>
       <div id="bio">
-        <a href="mailto:jchabin0@aol.com" style="text-decoration: none;">
-          <div class="iconcont clickable">
-            <img src="icons/envelope-icon.png" class="icon clickable">
-            <div class="iconhidden clickable">jchabin0@aol.com</div>
-          </div>
-        </a>
-        <div class="iconcont clickable">
-          <img src="icons/phone-call-icon.png" class="icon clickable">
-          <div class="iconhidden clickable">+1 720-990-8496</div>
+        <div class="iconcont">
+          <img src="icons/envelope-icon.png" class="icon">
+          <div class="iconhidden"><a class="awhite clickable" href="mailto:jchabin0@aol.com">jchabin0@aol.com</a></div>
         </div>
-        <a href="https://github.com/jchabin" target="_blank" style="text-decoration: none;">
-          <div class="iconcont clickable">
-            <img src="icons/github-mark-white.png" class="icon clickable" style="transform: translateY(-1px);">
-            <div class="iconhidden clickable">github.com/jchabin</div>
-          </div>
-        </a>
+        <div class="iconcont">
+          <img src="icons/phone-call-icon.png" class="icon">
+          <div class="iconhidden">+1 720-990-8496</div>
+        </div>
+        <div class="iconcont">
+          <img src="icons/github-mark-white.png" class="icon" style="transform: translateY(-1px);">
+          <div class="iconhidden"><a class="awhite clickable" href="https://github.com/jchabin" target="_blank">github.com/jchabin</a></div>
+        </div>
         <br/>
         <div class="tbg">
           <p>
@@ -2525,9 +2524,9 @@ function swap(id){
           </p>
         </div>
         <div class="tbg">
-          <p><a href="mailto:jchabin0@aol.com" class="awhite clickable"><img class="inline-icon" src="icons/envelope-icon.png">jchabin0@aol.com</a></p>
+          <p><a href="mailto:jchabin0@aol.com" class="awhite clickable"><img class="inline-icon clickable" src="icons/envelope-icon.png">jchabin0@aol.com</a></p>
           <p class="awhite"><img class="inline-icon" src="icons/phone-call-icon.png">+1 720-990-8496</p>
-          <p><a href="https://github.com/jchabin" class="awhite clickable" target="_blank"><img class="inline-icon" src="icons/github-mark-white.png">github.com/jchabin</a></p>
+          <p><a href="https://github.com/jchabin" class="awhite clickable" target="_blank"><img class="inline-icon clickable" src="icons/github-mark-white.png">github.com/jchabin</a></p>
         </div>
       </div>
     </div>

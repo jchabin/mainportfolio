@@ -69,6 +69,9 @@
         position: unset;
         margin-bottom: 100px;
       }
+      .inline-icon{
+        width: 16px;
+      }
       .slide{
         overflow-y: scroll;
       }
@@ -90,8 +93,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, minimum-scale=1.0">
     <meta
       name="description"
-      content="Here's my portfolio. It's got my resume, some info about me,
-               and a lot of my favortite projects that I've worked on!">
+      content="Official Website for Software Developer and Game Developer Johnny Chabin">
     <script>
 const projectsdata = [
   {
@@ -2486,23 +2488,47 @@ function swap(id){
         <div class="button clickable" onclick="projects()">Projects</div>
       </div>
       <div id="bio">
-        <p>
-          I'm a <span id="age">00</span> year-old software and game
-          developer from Colorado. I graduated from CU Boulder in 2022 as a
-          Bachelor of Science in Computer Science, two years early, thanks to AP
-          classes, summer classes, and concurrent enrollment.
-        </p>
-        <p>
-          After graduating, I moved to Utah to work as a Software
-          Development Engineer at Amazon, and have been working there since.
-          I've excelled in my role, and gone above and beyond what is expected
-          of me.
-        </p>
-        <p>
-          In my free time, I love working on personal games, projects, and
-          sometimes art, skiing, playing Motorstorm, and listening to weird
-          music.
-        </p>
+        <a href="mailto:jchabin0@aol.com" style="text-decoration: none;">
+          <div class="iconcont clickable">
+            <img src="icons/envelope-icon.png" class="icon clickable">
+            <div class="iconhidden clickable">jchabin0@aol.com</div>
+          </div>
+        </a>
+        <div class="iconcont clickable">
+          <img src="icons/phone-call-icon.png" class="icon clickable">
+          <div class="iconhidden clickable">+1 720-990-8496</div>
+        </div>
+        <a href="https://github.com/jchabin" target="_blank" style="text-decoration: none;">
+          <div class="iconcont clickable">
+            <img src="icons/github-mark-white.png" class="icon clickable" style="transform: translateY(-1px);">
+            <div class="iconhidden clickable">github.com/jchabin</div>
+          </div>
+        </a>
+        <br/>
+        <div class="tbg">
+          <p>
+            I'm a <span id="age">00</span> year-old software and game
+            developer from Colorado. I graduated from CU Boulder in 2022 as a
+            Bachelor of Science in Computer Science, two years early, thanks to AP
+            classes, summer classes, and concurrent enrollment.
+          </p>
+          <p>
+            After graduating, I moved to Utah to work as a Software
+            Development Engineer at Amazon, and have been working there since.
+            I've excelled in my role, and gone above and beyond what is expected
+            of me.
+          </p>
+          <p>
+            In my free time, I love working on personal games, projects, and
+            sometimes art, skiing, playing Motorstorm, and listening to weird
+            music.
+          </p>
+        </div>
+        <div class="tbg">
+          <p><a href="mailto:jchabin0@aol.com" class="awhite clickable"><img class="inline-icon" src="icons/envelope-icon.png">jchabin0@aol.com</a></p>
+          <p class="awhite"><img class="inline-icon" src="icons/phone-call-icon.png">+1 720-990-8496</p>
+          <p><a href="https://github.com/jchabin" class="awhite clickable" target="_blank"><img class="inline-icon" src="icons/github-mark-white.png">github.com/jchabin</a></p>
+        </div>
       </div>
     </div>
     <div id="projects">

@@ -8,7 +8,7 @@ ip: for(n in netInt){
     if(netInt[n][i].family == "IPv4" && !netInt[n][i].internal){
       LAN_ADDRESS = netInt[n][i].address;
       console.log(LAN_ADDRESS);
-      break ip;
+      // break ip;
     }
   }
 }

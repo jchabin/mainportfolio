@@ -127,6 +127,7 @@ body{
   color: white;
   text-align: right;
   white-space: nowrap;
+  direction: rtl;
   /* z-index: 2; */
 }
 .tbg{
@@ -135,6 +136,7 @@ body{
   margin-bottom: 2vmin;
   text-align: left;
   white-space: normal;
+  direction: initial;
 }
 .inline-icon{
   width: 26px;
@@ -155,12 +157,14 @@ body{
   white-space: nowrap;
   transition: max-width .5s;
   font-size: 16px;
+  direction: initial;
 }
 .iconcont:hover{
   max-width: 500px;
 }
 .iconhidden{
   display: inline;
+  margin-left: 3px;
   margin-right: 11px;
   color: white;
   text-decoration: underline;

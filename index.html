@@ -667,24 +667,19 @@ function startPlayer(){
     <br/><br/>
     <img class="aimage" src="images/cars_game_0.webp">
     <br/><br/>
-    I keep mentioning VR mode, but unfortunately this is a dead feature. Back
-    when I created this, the recommened way to make a VR app in THREE.js was
-    using a THREE.DeviceOrientationControls to track head rotation, and a
-    SteroEffect on the camera to create the necesary parallax. When viewed
-    through a Google Cardboard, it was a functioning demo. The car would
-    accelerate automatically, you would tilt your head on the Z-axis to steer,
-    and although fun, it was nauseating and ridiculous to actually use.
+    VR mode unfortunately broke a while ago, when a change to JS standards made
+    it more difficult to get access to device orientation. However, as of
+    <a href="https://github.com/jchabin/cars/issues/5">this issue</a> being
+    closed, this has been fully fixed. On mobile devices, this game once again
+    supports both tilt-to-steer, and Google Cardboard VR support. For the best
+    experience, I recommend making a custom headstrap (also out of cardboard)
+    like I did, as it improves the experience significantly. This specific VR
+    implementation was made before WebXR was even supported in THREE.js, which
+    is why is uses THREE.DeviceOrientationControls instead of any dedicated VR
+    device API, although I have also used WebXR for different VR experiences in
+    the years since.
     <br/><br/>
-    But we aren't allowed to have fun any more. DeviceOrientationControls are
-    gone, SteroEffect is not recommened for VR usage, detection of device
-    orientation no longer works on most mobile devices due to a host of
-    permissions issues, and Google Cardboard is discontinued. I had even
-    modified my own Cardboard with a custom headstrap (also made out of
-    cardboard). The feature is unfortunately gone, and it seems that nobody but
-    me misses it, or even remembers it existed - and, with it, tilt steering on
-    mobile was broken as well.
-    <br/><br/>
-    I also made a basic track editor, and luckily, this one still works. It's
+    I also made a basic track editor, and luckily, this one always worked. It's
     hidden under the gear, by clicking the giant pencil button. But the really
     cool part isn't actually on the track editor page at all - once you export
     the map, you can press Ctrl+I to import it into the main game, and any

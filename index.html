@@ -101,6 +101,398 @@
     <script>
 const projectsdata = [
   {
+    "id": "gmtk2024",
+    "src": "thmb_9",
+    "title": "GMTK 2024",
+    "desc": "Big game in a small time crunch",
+    "tags": ["Godot", "GLSL", "Blender", "JavaScript"],
+    "link": "https://jchabin.itch.io/2189",
+    "article":
+    `
+    <h1>The Real Slim Shader</h1>
+    <div class="adesc">Yes, this game is in Godot.</div><br/>
+    <img class="aimage" src="images/gmtk0.webp">
+    <br/><br/>
+    Game-Maker's Toolkit (GMTK) does an annual game jam, and this year I had the
+    chance to compete.
+    <a href="https://www.youtube.com/watch?v=iIbTPpfvZBQ" target="_blank">This year's theme</a>
+    was "Built to Scale." Most people interpreted this theme as something
+    related to "scaling" - like a scaleable object in game, a scaleable player,
+    some cliff that needs to be scaled, etc. My interpretation was more related
+    to the phrase itself, I wanted to build a universe that was, itself, built
+    to scale*.
+    <div class="adesc">*All my space-scale is approximate, and probably wrong.
+    It's based on the principle of "feeling really big," because it's cooler
+    like this, and nobody has complained yet.</div>
+    <br/>
+    <h1>Game Jelly</h1><br/>
+    I initially planned to work together with a friend on this, but
+    unfortunately she didn't have any time to work during the weekend, and was
+    only available for brainstorming and some playtesting. Brainstoring set us
+    down a couple of interesting paths!
+    <br/><br/>
+    <ul>
+      <li>
+        Survival Horror game where the monster gets bigger, scarier, and more
+        difficult to survive over time.
+      </li>
+      <li>
+        Kaiju street-fighter-esque game, where two players fight each other in a
+        giant city, the whole time knocking over buildings and flattening
+        streets. Near the end of a fight, military vehicles show up and deal
+        small amounts of the players as well, but are designed to be more of a
+        destroyable nuisance than anything.
+      </li>
+      <li>
+        A fishing game where the player is a cat, sitting in a boat on a lake.
+        As you collect more and more fish, the fish get larger, requiring the
+        player to upgrade the fishing rod and boat. The largest fish can
+        temporarily pull the whole boat underwater or swallow it, requiring
+        upgrades that give the ship rocket engines and a giant hook on front to
+        defend against it. We did both end up making some quick concept art for
+        this one, too, and I think it looked fun.
+        <br/><br/>
+        <div class="imgcenter"><img class="simg" src="images/gmtk1.webp"></div>
+      </li>
+      <li>
+        A space exploration game where the player is tasked to make deliveries
+        to various destinations across very large distances. Every journey is so
+        long it forces the player to sit in cryosleep for years, or decades,
+        between each stop. These large time skips are meant as a source of
+        existential dread for the player, as these impact them in ways that call
+        attention to the loss of time - for examplme, the nation they're
+        delivering to no longer exists when they arrive, they receive news that
+        they've outlived their great grandchildren, and the money they've been
+        paid is devalued 1000x due to compounding inflation.
+      </li>
+    </ul>
+    You saw the thumbnail pictures, I ended up going with the last one. It
+    seemed like such a literal intrepretation of "built to scale" could make my
+    game unique, and I had experience with rendering shaceships and planets that
+    should make the development easier. It also seemed like many of the features
+    and narrative would be extremely simple to write, which is important for a
+    game jam.
+    <br/><br/>
+    <h1>Modeling: Round 1</h1><br/>
+    The first thing I wanted to do was model out the spaceship. This is, of
+    course, the WRONG order to do things for a game, but it seemed fun. In all
+    of my sketches and ideas, I wanted the ship to have a very large front
+    window, I wanted parts of the ship to be viewable from the front window, and
+    I was heavily inspired by the aesthetics of Fallout New Vegas, in terms of
+    rounded mechanical-looking objects that have clearly fallen into a state of
+    disrepair.
+    <br/><br/>
+    <img class="simg" src="images/gmtk2.webp">
+    <div class="adesc">Notice the half-circle shape of the front window affords
+    great visibility of space, but also of parts of the ship itself, suggesting
+    the ship is much larger behind the player than is currently visible.</div><br/>
+    There's a couple other small tricks in here - namely the wires under the
+    control panels that are modeled with a simple NurbsPath, and the blinking
+    lights, which all share a material that flashes red or green randomly on a
+    grid, designed to align with the lights' UVs.
+    <br/><br/>
+    <div class="imgcenter"><img class="simg" src="images/gmtk3.webp"></div><br/>
+    This first pass at the ship interior was meant to have more detail added
+    later... we'll see how well that worked out. But for now, I was read to get
+    everything set up in Godot.
+    <br/><br/>
+    <img class="simg" src="images/gmtk4.webp">
+    <div class="adesc">There's a few specific graphical issues here that I was
+    able to iron out over time. First, notice how along the curved edge of the
+    ceiling, there's a light line - that's light leakage. Next, notice that the
+    floor appears completely black - that's because the reflection probe isn't
+    set up yet. And finally, notice that the light inside the stasis chamber is
+    illuminating the ceiling in a strange, unnatural way.</div><br/>
+    I always love solving light leakage. The solution feels intuitive in a very
+    funny way: I just model the outside of the ship manually, to block out the
+    unwanted light, which did completely solve this issue. The reflection probe
+    was simple to simply add to the scene, but this will have strange
+    implications in a few days. And finally fixing the blue light cast on the
+    ceiling was as simple as replacing the shadowless PointLight/OmniLight with
+    a shadowless SpotLight, so it only shines down, and not onto the ceiling.
+    <br/><br/>
+    With this, I was pretty much done with modeling. There still were further
+    changes, but these were small patches to fix issues as they came up. For
+    example, I had to change the height of the chamber and the door at a later
+    point to make it fix the player better, and have it not intersect with the
+    support beam.
+    <br/><br/>
+    <h1>Godot Universe</h1><br/>
+    The most obvious way to make a universe in 3D is just to position every
+    planet at realistic distances, with realistic sizes, and to just allow the
+    player's ship to move around this universe at will. This also doesn't work.
+    Floating point numbers (both float and double) have finite precision, and
+    become noticeably less precise at larger values. This issue infamously is
+    the reason why Minecraft movement breaks down near the edges of the world in
+    older versions,
+    <a href="https://youtu.be/97KpOlHo7LU?si=3xuYjuKu4x-7dWwT&t=2122" target="_blank">frequently observed during expeditions to the "far lands."</a>
+    It's worth noting that the Minecraft world is about 60 million meters across,
+    whereas the distance from the Earth to the Sun is nearly 150 billion meters.
+    While I could scale my math to not count distance in 10s or 100s of meters
+    at once, instead of by 1s, this would decrease precision at the same rate it
+    would improve it for large distances.
+    <br/><br/>
+    Clearly, I needed something a little bit smarter. That's where my solution
+    comes in: Just faking it. All planets are positioned in a JSON file, with
+    units in light years, and the player's ship is also tracked in light years.
+    Every time the ship moves, every space object within 15 light years is added
+    to the player's scene - but not scaled 1:1! All planets and stars are shrunk
+    by thousands of times before being added to the scene (planets are only
+    slightly larger than the player's ship), and the planets and stars are
+    placed a maximum of 16,000 units away from the player. All of this would
+    result in a comically small universe, if not for the final step - the entire
+    universe is moved whenever the camera is moved. This removes any parallax,
+    and makes the universe look as massive as it should.
+    <br/><br/>
+    <img class="simg" src="images/gmtk5.webp">
+    <div class="adesc">Definitely looks less impressive when I show the true
+    scale.</div><br/>
+    Counterintuitively, this does look EXACTLY the same to the player as if the
+    universe was rendered at full scale. It comes with its own set of issues
+    later in development, but it's much better than running up against the
+    maximum precision of the floating point math. The biggest of these issues
+    is how to make space stations function when dealing with a deceptively small
+    universe.
+    <br/><br/>
+    <h1>Space Stations</h1><br/>
+    <img class="simg" src="images/gmtk6.webp">
+    <br/><br/>
+    Easily one of my favorite aesthetic aspects of my game, the space stations
+    are extremely simple, functionally. I don't have much to say about the
+    modeling process of the space stations themselves. I made both of them at
+    1 AM the night before the jam ended, in about 20 minutes each, fueled by
+    sleep deprivation, something that I referenced heavily when putting together
+    the billboard textures. Both of them use materials I already had made for
+    the player's ship, and make heavy use of Blender's Array and Wireframe nodes
+    to quickly generate a lot of very mechanical-looking geometry.
+    <br/><br/>
+    <div class="imgcenter"><img class="simg" src="images/gmtk7.webp"></div><br/>
+    Whenever the player arrives at a space station, the game simply adds the
+    space station object in front of the player, and animates it along the curve
+    <div class="amath">z = t^3</div>, chosen because it makes the player appear
+    to slow down as it approaches the station, stop for a moment, and then
+    accelerate and fly away. This little math/physics/animation trick creates,
+    in my opinion, one of the coolest and most convincing effects in the game.
+    <br/><br/>
+    <h1>Shaders</h1>
+    <div class="adesc">This is the part I've been wanting to talk about this
+    whole time.</div><br/>
+    A big motivator for choosing this concept for my game is that I have, in the
+    past, made simple shaders for rendering planets. This wasn't actually
+    something I could use in the game itself - both morally (it would kinda be
+    cheating to use old code in a game jam), and logistically, the code wasn't
+    something that I could apply to a spherical geometry, it just rendered a
+    circle onto a flat geometry using a fragment shader. This planet shader is
+    running in ShaderToy, and looks pretty good for being realtime. All of the
+    atmospheric equations are faked and estimated, something that will persist
+    into my new planet shader.
+    <div class="imgcenter"><img class="simg" src="images/gmtk8.webp"></div>
+    <div class="adesc">Easily my favorite part of this is how the clouds cast
+    shadows onto the planet's surface, although it's not really physically
+    accurate at all - clouds aren't high enough to have shadows this significant
+    from space. But it looks great, and thats still my priority.</div><br/>
+    The new planet shader, running in Godot (and made during a game jam!), has
+    some significant technical limitations. Most noteably, I want to take
+    advantage of Godot's existing lighting model, so I don't have to do my own
+    calculations for shadows, or manually handle the position of the sun.
+    Instead, I used the Godot <div class="amath">fragment()</div> shader
+    funciton to simply override the material properies, but left the lighing
+    function alone.
+    <br/><br/>
+    <pre><code class="language-c">// Simple (kinda bad) Godot planet shader
+
+// Feel free to take and use this, although being given credit would be great.
+
+shader_type spatial;
+
+uniform vec3 ATMOSPHERE = vec3(61, 181, 255); // Color of the atmosphere
+uniform float WATER_LEVEL = 0.2; // Range [-1, 1], higher values = less water
+uniform float SEED = 0.;
+uniform float CLOUD = 0.1; // Range [-1, 1], higher values = less clouds
+
+// This is the only color uniform that is [0, 1] instead of [0, 255]. This is
+// because I made this code very quickly, and didn't want to have to go and fix
+// all of the uniforms that I configured for each planet.
+uniform vec3 CLOUD_COLOR = vec3(.8); // Color of clouds
+
+uniform vec3 DARK_WATER = vec3(1, 19, 71); // Color of the water (deep)
+uniform vec3 LIGHT_WATER = vec3(5, 106, 237); // Color of the water (shallow)
+uniform float BUMPINESS = 0.03; // Intensity of terrain's effect on normals
+uniform vec3 NIGHT_LIGHT = vec3(247, 226, 151); // Color of lights on planet
+
+// These three are different colors of the ground, which are mixed between to
+// make a more interesting surface texture.
+uniform vec3 GROUND0 = vec3(16, 82, 34);
+uniform vec3 GROUND1 = vec3(10);
+uniform vec3 GROUND2 = vec3(45, 74, 10);
+
+// Taken from https://stackoverflow.com/a/4275343, and modified to work with
+// three dimensional inputs, rather than two.
+float rand(vec3 r) {
+  return fract(sin(dot(r, vec3(12.9898, 78.233, 45.6231))) * 43758.5453);
+}
+
+// Simple smoothing function, used for smoother mixing.
+float interp(float r) {
+  return r * r * (3.0 - 2.0 * r);
+}
+
+// I didn't have time to rewrite my own Perlin noise function for this jam, so
+// I'm just smoothly interpolating between the random noise values.
+float srand(vec3 r) {
+  return mix(
+    mix(
+      mix(rand(vec3(floor(r.x), floor(r.y), floor(r.z))), rand(vec3(ceil(r.x), floor(r.y), floor(r.z))), interp(fract(r.x))),
+      mix(rand(vec3(floor(r.x), ceil(r.y), floor(r.z))), rand(vec3(ceil(r.x), ceil(r.y), floor(r.z))), interp(fract(r.x))),
+      interp(fract(r.y))
+    ), mix(
+      mix(rand(vec3(floor(r.x), floor(r.y), ceil(r.z))), rand(vec3(ceil(r.x), floor(r.y), ceil(r.z))), interp(fract(r.x))),
+      mix(rand(vec3(floor(r.x), ceil(r.y), ceil(r.z))), rand(vec3(ceil(r.x), ceil(r.y), ceil(r.z))), interp(fract(r.x))),
+      interp(fract(r.y))
+    ), interp(fract(r.z)));
+}
+
+// The texture from "srand" looks pretty bad, this function layers it several
+// times and greatly improves the look and detail.
+float noise(vec3 r) {
+  return (srand(r) + srand(r * 2.0) / 2.0 + srand(r * 4.0) / 4.0 + srand(r * 8.0) / 8.0 + srand(r * 16.0) / 16.0 + srand(r * 32.0) / 32.0 + srand(r * 64.0) / 64.0) / 2.0;
+}
+
+// Sharper version of "noise." Looks more "mountainy"...
+float fnoise(vec3 r) {
+  float f = noise(r);
+  return f * f * f;
+}
+
+// Very simple gradient (normal) calculation.
+vec3 deriv(vec3 r, float val) {
+  float eps = 0.01;
+  return normalize(-vec3(
+    fnoise(r + vec3(eps, 0, 0)) - val,
+    fnoise(r + vec3(0, eps, 0)) - val,
+    fnoise(r + vec3(0, 0, eps)) - val
+  ));
+}
+
+void fragment() {
+
+  // Calculates the local position based on UVs.
+  vec3 wPos = vec3(-sin(UV.x * TAU) * sin(UV.y * PI), cos(UV.y * PI), -cos(UV.x * TAU) * sin(UV.y * PI));
+
+  // sVal is the height of the surface, cVal is the amount of cloud cover.
+  float sVal = fnoise(wPos * 5. + SEED);
+  float cVal = fnoise(wPos * 10. + 1. * sin(wPos.y * 5. + TIME * 0.03) + 10. + SEED);
+
+  vec3 nB = NORMAL;
+
+  // Simple logic to interpolate between different ground and water colors,
+  // based on sVal. The colors are written into ALBEDO, meaning they show up as
+  // the main color of the material.
+  if(sVal > WATER_LEVEL) {
+    if(sVal > WATER_LEVEL + .02) {
+      ALBEDO = mix(mix(GROUND0, GROUND1, fnoise(wPos * 20. + SEED) * 1.) / 255., GROUND2 / 255., (sVal - WATER_LEVEL - .02) / (.98 - WATER_LEVEL));
+    } else {
+      ALBEDO = mix(LIGHT_WATER / 255., mix(GROUND0, GROUND1, fnoise(wPos * 20. + SEED) * 1.) / 255., (sVal - WATER_LEVEL) / .02);
+    }
+
+    // Took a while to get the correct matrix math here. VIEW_MATRIX converts
+    // the calculated gradient into view space, which can be safely mixed with
+    // the existing value in NORMAL.
+    NORMAL = normalize(mix(NORMAL, (VIEW_MATRIX * vec4(deriv(wPos * 5. + SEED, sVal), 0.0)).xyz, BUMPINESS));
+    EMISSION += NIGHT_LIGHT / 255. * clamp(pow(noise(wPos * 15. + SEED), 25.) * 15., 0., 1.);
+  } else {
+    ALBEDO = mix(DARK_WATER / 255., LIGHT_WATER / 255., sVal * sVal * pow(WATER_LEVEL, -2.));
+  }
+
+  // Clouds are added on top of the ground/water, and will unset the normals.
+  if(cVal > CLOUD) {
+    ALBEDO = mix(ALBEDO, CLOUD_COLOR, (cVal - CLOUD) * 3.);
+    NORMAL = mix(NORMAL, nB, (cVal - CLOUD) * 3.);
+  }
+
+  // Best trick in the shader. The ALBEDO is given a boost when at a glancing
+  // angle to the camera, sometimes 10x than the normally allowed maximum value.
+  // This causes it to appear actually glowing near the edges of the planet.
+  ALBEDO += ATMOSPHERE / 255. * pow(1.0 - dot(nB, VIEW), 7.) * 10.;
+  METALLIC = .5;
+}</code></pre><br/>
+    The dozen uniforms I have allow me to use the same shader for every planet,
+    and simply mess around with the values to generate a wide variety of planets
+    to explore. Despite the simplicity, I think it works great, and the shaders
+    appear to perform very well, even on low-end systems. The star shader is
+    even simpler:
+    <br/><br/>
+    <pre><code class="language-c">// Simple (kinda bad) Godot star shader
+
+// Feel free to take and use this, although being given credit would be great.
+
+shader_type spatial;
+
+// There's far fewer uniforms in this shader, the stars are more similar-looking
+// to each other than the planets are.
+uniform vec3 MAIN_COLOR = vec3(255, 106, 77);
+uniform float BRIGHTNESS = 250.;
+uniform float SEED = 0.;
+
+// These are the same noise functions as were used for the planets
+float rand(vec3 r) {
+  return fract(sin(dot(r, vec3(12.9898, 78.233, 45.6231))) * 43758.5453);
+}
+
+float interp(float r) {
+  return r * r * (3.0 - 2.0 * r);
+}
+
+float srand(vec3 r) {
+  return mix(
+    mix(
+      mix(rand(vec3(floor(r.x), floor(r.y), floor(r.z))), rand(vec3(ceil(r.x), floor(r.y), floor(r.z))), interp(fract(r.x))),
+      mix(rand(vec3(floor(r.x), ceil(r.y), floor(r.z))), rand(vec3(ceil(r.x), ceil(r.y), floor(r.z))), interp(fract(r.x))),
+      interp(fract(r.y))
+    ), mix(
+      mix(rand(vec3(floor(r.x), floor(r.y), ceil(r.z))), rand(vec3(ceil(r.x), floor(r.y), ceil(r.z))), interp(fract(r.x))),
+      mix(rand(vec3(floor(r.x), ceil(r.y), ceil(r.z))), rand(vec3(ceil(r.x), ceil(r.y), ceil(r.z))), interp(fract(r.x))),
+      interp(fract(r.y))
+    ), interp(fract(r.z)));
+}
+
+float noise(vec3 r) {
+  return (srand(r) + srand(r * 2.0) / 2.0 + srand(r * 4.0) / 4.0 + srand(r * 8.0) / 8.0 + srand(r * 16.0) / 16.0 + srand(r * 32.0) / 32.0 + srand(r * 64.0) / 64.0) / 2.0;
+}
+
+float fnoise(vec3 r) {
+  float f = noise(r);
+  return f * f * f * f * f;
+}
+
+void fragment() {
+  vec3 wPos = vec3(-sin(UV.x * TAU) * sin(UV.y * PI), cos(UV.y * PI), -cos(UV.x * TAU) * sin(UV.y * PI));
+  ALBEDO = vec3(0);
+  float val = fnoise(wPos * 10. + 30. * fnoise(wPos + TIME * 0.003));
+
+  // I wanted the stars to look less sphereical, so it "discard"s pixels near
+  // the edge of the sphere, based on normals and the expected brightness.
+  if(val > pow(dot(VIEW, NORMAL), 3.0) * 6.) {
+    discard;
+  }
+
+  EMISSION = BRIGHTNESS * MAIN_COLOR / 255. * val;
+}</code></pre><br/>
+    <img class="aimage" src="images/gmtk9.webp"><br/>
+    <img class="aimage" src="images/gmtk10.webp"><br/>
+    <img class="aimage" src="images/gmtk11.webp">
+    <br/><br/>
+    <h1>Unfinished Business</h1><br/>
+    This project was made on a very strict timeline, and there's a lot of things
+    I wanted to include with this that I ran out of time for - the most
+    significant being that the game was missing sound when submitted to GMTK. I
+    have since begun adding sounds into a newer build of the game, with a large
+    number of bug fixes, QOL improvements, and balancing changes.
+    <br/><br/>
+    <img class="aimage" src="images/gmtk12.webp">
+    `
+  },
+  {
     "id": "asteroids",
     "src": "thmb_0",
     "title": "Asteroids",
@@ -400,7 +792,7 @@ function startPlayer(){
     "src": "thmb_1",
     "title": "Custom Fractal Renderer",
     "desc": "3D Renderer that beautifully renders complex shapes with SDFs",
-    "tags": ["OpenGL", "C"],
+    "tags": ["OpenGL", "C", "GLSL"],
     "article":
     `
     <h1>Circle. Square. Triangle.</h1>
@@ -1716,7 +2108,7 @@ console.log("\\n\\x1b[92mReady!\\x1b[0m");</code></pre><br/>
     are probabilities, not certainties. If the lizard is ever shot, there is a
     50% chance it flees, if you fire near a wandering lizard, there is a 50%
     chance it flees, and every time you fire at an attacking lizard, there is a
-    5% chance it flees. These were balances so that the lizards feel
+    5% chance it flees. These were balanced so that the lizards feel
     unpredictable, although I'll certainly admit the illusion is largely broken
     by explaining the AI and showing diagrams with brightly colored lizards for
     visibiltiy.
@@ -2361,7 +2753,9 @@ const tags_defs = {
   "NodeJS": "#68a063",
   "Python": "#4584b6",
   "WebSocket": "#ff6600",
-  "Blender": "#e87d0d"
+  "Blender": "#e87d0d",
+  "Godot": "#478cbf",
+  "GLSL": "#5586a4"
 };
 
 function getColor(s){
@@ -2436,14 +2830,22 @@ function renderProjects(tagSearch){
       hljs.highlightAll();
 
       document.getElementById("alink").style.display = proj.link ? "" : "none";
-      document.getElementById("alink").onclick = () => { window.open(proj.link) };
+      document.getElementById("alink").onclick = () => {
+        window.open(proj.link);
+        analytics.logEvent("view_project", {id: proj.id});
+      };
       document.getElementById("agit").style.display = proj.git ? "" : "none";
-      document.getElementById("agit").onclick = () => { window.open(proj.git) };
+      document.getElementById("agit").onclick = () => {
+        window.open(proj.git);
+        analytics.logEvent("view_git", {id: proj.id});
+      };
 
       document.getElementById("articlecont").className = "open";
       document.getElementById("article").scrollTop = 0;
 
       history.replaceState({}, "", "?project=" + proj.id);
+
+      analytics.logEvent("view_article", {id: proj.id});
     };
 
     // let m = 0;
@@ -2581,5 +2983,21 @@ function swap(id){
       }
     </script>
     <script src="script.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.22.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.22.1/firebase-analytics.js"></script>
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyAUnpBUiLbvHgsspaga4O4_towhX-kbPJY",
+        authDomain: "portfolio-analytics-8d4c4.firebaseapp.com",
+        projectId: "portfolio-analytics-8d4c4",
+        storageBucket: "portfolio-analytics-8d4c4.appspot.com",
+        messagingSenderId: "836057176031",
+        appId: "1:836057176031:web:fde19355d9da07fce8566a",
+        measurementId: "G-7LGT4845Q0"
+      };
+
+      const app = firebase.initializeApp(firebaseConfig);
+      const analytics = firebase.analytics();
+    </script>
   </body>
 </html>

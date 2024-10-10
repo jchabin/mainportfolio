@@ -128,7 +128,7 @@ function update(){
 }
 
 function resume(){
-  window.open("resume_12_12_23.pdf");
+  window.open("resume_10_10_24.pdf");
 }
 
 function closeresume(){

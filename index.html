@@ -1206,7 +1206,7 @@ function startPlayer(){
     But these parameters seem somewhat redundant to me. Specifically, how do
     "Strength" and "Max Force" differ?
     <a target="_blank" href="https://dev.epicgames.com/documentation/en-us/unreal-engine/physics-constraint-reference-in-unreal-engine#angularmotor">The documentation</a>
-    states
+    states:
     <br/><br/>
     <div class="aquote"><b>Strength:</b> The force applied to reach the target velocity.</div><br/>
     <div class="aquote"><b>Max Force:</b> The force limit of the drive.</div><br/>
@@ -1332,7 +1332,7 @@ function startPlayer(){
     <br/><br/>
     There's a <em>lot</em> happening here. First, I retrieve the world locations
     of the end effector ($\\vec e(t)$) and the target position ($\\vec g(t)$).
-    Next, I use those matrices from the previous step to multiply
+    Next, I use those matrices from the previous step to multiply:
     $$
     (M_n(t)T_{J_n \\to M_n})^{-1} * \\vec e(t) = T_{M_n \\to J_n}M^{-1}_n(t) * \\vec e(t)
     $$

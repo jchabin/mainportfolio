@@ -3,6 +3,7 @@
 }
 html{
   background: black;
+  overflow: hidden;
 }
 body{
   cursor: none;

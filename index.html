@@ -91,9 +91,35 @@
       .iconcont{
         border: 2.5px solid white;
       }
+      #skillspanel{
+        width: 100%;
+      }
     </style>
     <link rel="stylesheet" href="highlight/sunburst.min.css">
-    <script src="highlight/highlight.min.js"></script>
+    <script async src="highlight/highlight.min.js" onload="hljs.highlightAll()"></script>
+
+
+    <!-- <script>
+      MathJax = {
+        tex: {inlineMath: [["$", "$"]]},
+        startup: {
+          elements: [".math"],
+          typeset: true
+        },
+        options: {
+          renderActions: {
+            addMenu: []
+          }
+        }
+      };
+    </script>
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.min.js"></script> -->
+
+
+    <link rel="stylesheet" href="katex/katex.min.css">
+    <script defer src="katex/katex.min.js"></script>
+    <script defer src="katex/auto-render.min.js" onload="Array.from(document.getElementsByClassName('math')).forEach(m => renderMathInElement(m, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]}));"></script>
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, minimum-scale=1.0">
     <meta
       name="description"
@@ -739,7 +765,7 @@ function startPlayer(){
     between clients, and acts as a simple anticheat.
     <br/><br/>
     <h1>Other cool things about this</h1><br/>
-    <div class="imgcenter"><img class="simg" src="images/asteroids_clip.gif"></div>
+    <div class="imgcenter"><video class="simg" autoplay playsinline loop muted src="videos/asteroids_clip0.mp4"></video></div>
     <div class="adesc">
     Look at how those dots curl and form a "flowery" pattern!
     </div><br/>
@@ -767,7 +793,7 @@ function startPlayer(){
     "Start," were also made by me, for this game.
     <br/><br/>
     <h1></h1><br/>
-    <div class="imgcenter"><img class="simg" src="images/asteroids_clip_2.gif"></div>
+    <div class="imgcenter"><video class="simg" autoplay playsinline loop muted src="videos/asteroids_clip1.mp4"></video></div>
     <div class="adesc">
     Look how those colors spin!
     </div><br/>
@@ -960,12 +986,417 @@ function startPlayer(){
     it interesting. So I'll end it here with a short video I made by manually
     rendering each frame!
     <br/><br/>
-    <img class="aimage" src="images/fractalvid.gif">
+    <video class="aimage" autoplay playsinline loop muted src="videos/fractalvid.mp4"></video>
     <div class="adesc">
     Notice the slight motion blur? There's technically no "motion" in this
     scene, as the shapes are being scaled, not translated nor rotated - but I
     got that effect by randomly jittering the scale a subframe amount for each
     ray.
+    </div>
+    `
+  },
+  {
+    "id": "unreal1",
+    "src": "thmb_10",
+    "title": "UE5 Inverse Kinematics",
+    "desc": "Custom inverse kinematics solution in Unreal Engine",
+    "tags": ["Unreal", "Blender"],
+    "article":
+    `<h1>UE5 Inverse Kinematics</h1>
+    <div class="adesc">or: How I learned to stop worrying and love gradient descent.</div><br/>
+    <img class="aimage" src="images/unreal0.webp">
+    <br/><br/>
+    Unreal Engine is very optimized for certain kinds of games; specifically,
+    1st/3rd person shooters or fighting games. Not only do the default
+    components in the engine include most of the features you would need, but
+    the example projects have more complex mechanics in these genres already
+    implemented for you. Unreal makes this even more accessible by including a
+    visual scripting language that is almost as powerful as their C++
+    alternative.
+    <br/><br/>
+    But there are areas where UE falls flat. The engine crashes frequently.
+    Documentation is often minimal, if it exists at all, and what does exist is
+    often outdated and unclear. Visual scripting covers such a wide scope that
+    it has become bulky and unintuitive. Nanite, their automatic remeshing/LoD
+    tool,
+    <a target="_blank" href="https://forums.unrealengine.com/t/nanite-performance-is-not-better-than-overdraw-focused-lods-test-results-epics-documentation-is-dangering-optimization/1263218">
+    still performs worse than traditional LoDs, and often worse than no LoD
+    method at all</a>. Nanite is also incentivizing a massive increase in file
+    sizes, due to the inclusion of photogrammetry-quality meshes in game files.
+    Their many realtime screenspace methods leave compounding artifacts, and
+    although they're pushing the limits of game software, they're also leaving
+    behind the many players who can't run such demanding games. Because their
+    blueprints are as powerful and feature-complete as any other language,
+    inexperienced developers are alienated due to the complexity, and
+    experienced developers are alienated due to the unpleasant interface and UX.
+    <br/><br/>
+    But I am still interested in high-end rendering, and seeing what the limits
+    are. Unreal Engine games usually look fantastic, and after recently messing
+    around for a few hours, I was able to get Lumen running in VR, with a stable
+    90-100FPS. I was impressed that was possible at all, and this was the push I
+    needed to make a full project in Unreal Engine 5.
+    <br/><br/>
+    <h1>Built-In Inverse Kinematics</h1><br/>
+    For this project, I needed some basic inverse kinematics (IK). But I had a
+    few requirements that made it difficult to use an existing solution:
+    <br/><br/>
+    <ol>
+      <li>
+        Ability to respect angular limits on each joint.
+      </li>
+      <li>
+        Joints that behave like real motors, with limits on speed, rather than
+        just being an IK chain that is attached to the target.
+      </li>
+      <li>
+        The fastest path between two points is rarely even linear.
+      </li>
+      <li>
+        Joints that operate with realistic force, and collision with the game
+        world. It should respond to outside forces and collisions as it would in
+        real life.
+      </li>
+      <li>
+        A non-static target position that may move before the arm has arrived.
+        The arm should be able to adjust its trajectory as the target moves.
+      </li>
+    </ol>
+    Looking through the existing solutions in Unreal Engine, I was disappointed.
+    Their "Control Rig" is powerful, but is designed for procedural animation,
+    not realistic physics. As such, it fails requirements 2 and 3, and likely
+    1 and 4 as well. Another popular solution for Unreal IK is the "PowerIK"
+    plugin, but this has most of the same issues, and is not compatible with
+    Unreal Engine 5 at all.
+    <br/><br/>
+    Because the options were so limited, this forced me to the solution that I
+    was secretly hoping for the whole time: writing my own IK.
+    <br/><br/>
+    <h1>Custom Inverse Kinematics</h1><br/>
+    The method I selected is the Jacobian inverse technique method. At the risk
+    of oversimplifying, the method is to calculate the partial derivative for
+    each joint's angle and the X, Y, and Z coordinates for the end of the IK
+    chain. These derivatives should be written into a Jacobian matrix, which
+    can then be pseudo-inverted, and multiplied by the current difference from
+    the IK end node and the target position. This vector output can be added to
+    the position of each joint, and the method must be iterated until the target
+    is reached, or no more improvement is possible. The method is described in
+    more detail <a target="_black" href="https://www.cs.cmu.edu/~15464-s13/lectures/lecture6/iksurvey.pdf">here</a>,
+    but I'll be deviating from the regular method pretty heavily later.
+    <br/><br/>
+    I've implemented this in the past, in Python, for a different robot arm
+    controller, and was happy with the results. However, Unreal Engine posed a
+    significant obstacle - blueprints have no way to define matrices larger than
+    4x4, no way to write arbitrary data into matrices, and no pseudoinverse
+    method.
+    <br/><br/>
+    I did believe that I could technically make a working IK system without
+    those features, however. The paper I linked above mentions that the
+    transpose of the Jacobian would work in place of the inverse, which is
+    something I could implement without any matrix methods. Let
+    <span class="math">$J$</span> be the Jacobian matrix,
+    <span class="math">$\\theta$</span> be the list of angles, and
+    <span class="math">$\\vec e$</span> be the error vector.
+    <div class="math">$$
+    J = \\begin{bmatrix}
+    \\frac{\\partial x}{\\partial \\theta_0} & \\frac{\\partial x}{\\partial \\theta_1} & \\ldots & \\frac{\\partial x}{\\partial \\theta_n} \\\\
+    \\frac{\\partial y}{\\partial \\theta_0} & \\frac{\\partial y}{\\partial \\theta_1} & \\ldots & \\frac{\\partial y}{\\partial \\theta_n} \\\\
+    \\frac{\\partial z}{\\partial \\theta_0} & \\frac{\\partial z}{\\partial \\theta_1} & \\ldots & \\frac{\\partial z}{\\partial \\theta_n}
+    \\end{bmatrix}
+    ,\\quad
+    \\Delta \\theta = J^T \\vec{e} = \\begin{bmatrix}
+    \\begin{pmatrix} \\frac{\\partial x}{\\partial \\theta_0} \\\\ \\frac{\\partial y}{\\partial \\theta_0} \\\\ \\frac{\\partial z}{\\partial \\theta_0} \\end{pmatrix} \\cdot \\vec e \\\\[5ex]
+    \\begin{pmatrix} \\frac{\\partial x}{\\partial \\theta_1} \\\\ \\frac{\\partial y}{\\partial \\theta_1} \\\\ \\frac{\\partial z}{\\partial \\theta_1} \\end{pmatrix} \\cdot \\vec e
+    \\\\[3.8ex] \\vdots \\\\[1ex]
+    \\begin{pmatrix} \\frac{\\partial x}{\\partial \\theta_n} \\\\ \\frac{\\partial y}{\\partial \\theta_n} \\\\ \\frac{\\partial z}{\\partial \\theta_n} \\end{pmatrix} \\cdot \\vec e
+    \\end{bmatrix}
+    $$
+    $$
+    \\Delta \\theta_n = \\begin{pmatrix} \\frac{\\partial x}{\\partial \\theta_n} \\\\ \\frac{\\partial y}{\\partial \\theta_n} \\\\ \\frac{\\partial z}{\\partial \\theta_n} \\end{pmatrix} \\cdot \\vec e
+    = \\frac{\\partial x}{\\partial \\theta_n} \\vec e_x
+    + \\frac{\\partial y}{\\partial \\theta_n} \\vec e_y
+    + \\frac{\\partial z}{\\partial \\theta_n} \\vec e_z
+    $$</div>
+    As you can see, I was able to simplify the transposed Jacobian method into
+    a simple dot product of the partial derivatives of each joint, and the error
+    between the current end node position and the target position. There are
+    some notable issues with this transpose method not pointed out in the paper.
+    The first is that this method would be biased towards movement along the
+    axes that are in line with the target position. Because we are summing the
+    X, Y, and Z components of the error, diagonals are counted as a greater
+    error than the equidistant vector that falls along the axes. If the target
+    is unreachable, the arm would prefer to sit along an axis than it would the
+    actual closest point.
+    <br/><br/>
+    The second issue is that we no longer get any direct benefit from tracking
+    X, Y, and Z independently. When using an actual matrix pseudoinverse, the
+    result would be able to take into account how different joints could cancel
+    out motion in each axis. The transpose cannot do that directly, it only
+    works to minimize the sum of the magnitude of the X, Y, and Z errors.
+    <br/><br/>
+    My concept was for a solution that would use a scalar error value that is
+    equal to the distance from the end node to the target. Not only does this
+    solve the bias issue, but it should function just as well as the transpose
+    solution. But I wasn't completely sure how well this would work, if at all.
+    <br/><br/>
+    For this reason, I made a quick mockup in JS/Canvas to confirm that this
+    sort of method would be solvable at all. It's very primitive, the handedness
+    of my rotation matrices are probably completely wrong, and it looks like 4
+    lines and a dot (because it is). Despite those faults, it does work as a
+    proof of concept. It will generate various arms and target locations, and
+    repeatedly run them to see if they're possible. In the vast majority o
+    cases, they are solvable just fine with the simplified method.
+    <br/><br/>
+    <div class="imgcenter">
+      <iframe style="aspect-ratio: 1" class="simg" src="lazyikdemo" width="500" frameBorder="0"></iframe>
+    </div>
+    <div class="adesc">The code is at <a target="_blank" href="/lazyikdemo/script.js">/lazyikdemo/script.js</a>, if you're interested.</div>
+    <br/>
+    If there's one thing to note in this demo, it's that this method is not
+    instant. It usually takes about a second. This is not due to any limitation
+    in the algorithm, but instead an intentional choice to make sure this method
+    could satisfy requirement 2, the requirement for realistic motor speed. In
+    fact, this goes a step deeper: the full IK solution is not calculated at all
+    while the arm moves. Instead, the arm only runs a single iteration of the
+    descent method described above, and moves the arm in that direction, limited
+    by the rotation speed of the motor itself. The idea was that, because of
+    requirement 5, and the assumption that the target could, and most likely
+    would, change every frame, it was better to simply solve for the movement
+    of the next frame, and no further than that. While this will cause
+    inaccuracies due to lack of planning, that problem will be addressed later.
+    <br/><br/>
+    <h1>In-Engine Testing</h1><br/>
+    <img class="aimage" src="images/unreal1.webp">
+    <div class="adesc">Notice that some of the joints have geometry blocking
+    their movement. This is intentional - it's to indicate where the limits of
+    each joint need to be positioned.</div><br/>
+    The next thing I did was throw together a quick robot arm in Blender. While
+    this is all just placeholder geometry, I'm still proud of how it turned out.
+    All of the joints are perfectly aligned and appear realistically attached,
+    the style is fairly plausible as a real robot arm, and my smooth geometry
+    looks great in Unreal Engine. No subdivision surfaces here - this is good
+    old-fashioned, all-American, polygon modeling with generous beveling.
+    <br/><br/>
+    <img class="aimage" src="images/unreal2.webp">
+    <div class="adesc">Well, at least the top half of the geometry is nice.</div><br/>
+    Importing this into Unreal, I began to set up physics constraints with
+    correct limits. These constraints also have a "Motors" section, which allows
+    me to actually move the arm. These motors can be configured to target either
+    a specific orientation or a specific velocity. Normally, I could just plug
+    the IK solution data into the target orientation - however, as mentioned
+    above, I'm only solving IK for a single iteration each frame, rather than
+    solving for the exact solution. For this reason, my IK doesn't actually know
+    what angle each joint should seek. It <em>does</em> tell me which direction
+    the joints should move, though, which is perfect for target velocity. I
+    could finally start setting up my IK blueprint with Unreal Engine physics
+    constraints.
+    <br/><br/>
+    <h1>Physics Constraints</h1><br/>
+    For no reason at all, and with no implications or foreshadowing, let's do
+    some quick tests on the physics constraints, to make sure they behave the
+    way I'd expect.
+    <br/><br/>
+    <video class="aimage" autoplay playsinline loop muted src="videos/unreal_clip0.mp4"></video>
+    <div class="adesc">Three identical motors, behaving exactly as expected.
+    They all have identical motor parameters, so they behave identically.</div><br/>
+    The first test, the control test, is to set all of the motors to spin with
+    the same target velocity and forces. All of the parameters I set are under
+    the corresponding motors, and they all successfully reach 1rot/s within a
+    couple seconds.
+    <br/><br/>
+    But these parameters seem somewhat redundant to me. Specifically, how do
+    "Strength" and "Max Force" differ?
+    <a target="_blank" href="https://dev.epicgames.com/documentation/en-us/unreal-engine/physics-constraint-reference-in-unreal-engine#angularmotor">The documentation</a>
+    states
+    <br/><br/>
+    <div class="aquote"><b>Strength:</b> The force applied to reach the target velocity.</div><br/>
+    <div class="aquote"><b>Max Force:</b> The force limit of the drive.</div><br/>
+    This is not clear at all to me. Does this mean strength is a minimum force,
+    instead? What units are any of these values in? To test it, let's try
+    changing that strength value to find out.
+    <br/><br/>
+    <video class="aimage" autoplay playsinline loop muted src="videos/unreal_clip1.mp4"></video>
+    <div class="adesc">Here, the motors have different strengths, and speed up
+    at appropriately different rates.</div><br/>
+    When the strength is changed, it changes the amount of force used to reach
+    the target velocity. None of the motors go faster than the 1rot/s they are
+    seeking. Instead, they just approach it at different speeds. The fact that
+    the rightmost motor does not overshoot the goal, and instead just reaches it
+    more quickly, indicates that strength is controlling the maximum amount of
+    force allowed to be exerted by the motor. This still says nothing about the
+    units, or the difference between strength and max force, however, but it
+    does present a very logical system for how these properties behave.
+    <br/><br/>
+    For another test, let's confirm that the target velocity behaves as
+    expected. If our understanding is correct so far, giving the motors
+    identical strengths but varying target velocities will result in equal
+    initial acceleration, until they one-by-one reach their target velocity.
+    <br/><br/>
+    <video class="aimage" autoplay playsinline loop muted src="videos/unreal_clip2.mp4"></video>
+    <br/><br/>
+    <h1>Why is it doing that???</h1><br/>
+    It's not exactly clear why this is happening. Nothing in the documentation
+    mentions anything about this. It's only a single sentence:
+    <br/><br/>
+    <div class="aquote"><b>Target Velocity:</b> Target angular velocity relative to the body reference frame</div><br/>
+    This implies that the previous hypothesis, where strength functions as a
+    maximum force setting, and it will accelerate with that force until it
+    reaches the specified velocity. However, by closely looking at the above
+    video, we see a different pattern - notice that the velocity of each motor
+    at any instant is approximately 10x that of the previous motor. The behavior
+    we see instead is that strength is seemingly multiplied by velocity in order
+    to get the output force. Except this understanding also breaks, in different
+    cases.
+    <br/><br/>
+    For example - given this new understanding, setting the target velocity to
+    zero, or close to zero, would cause the motor to do absolutely nothing, due
+    to maximum force being a multiple of zero. Instead, it tries to actually
+    maintain a rotational velocity of zero, and the amount of force it uses to
+    hold that velocity is again proportional to strength. Further testing
+    reveals that the motor uses strength differently when maintaining velocity,
+    versus when accelerating to a target velocity.
+    <br/><br/>
+    For an even weirder effect, look again at that video, and notice that the
+    rightmost motor is the first to reach its target velocity, and by quite a
+    lot. This is too large of a discrepancy to be due to random physics errors.
+    Normally, I would assume that this is due to angular damping or air
+    resistance, but
+    <a target="_blank" href="https://documentation.help/NVIDIA-PhysX-SDK-Guide/RigidDynamics.html">damping is proportional to velocity</a>,
+    meaning it should not affect the rate at which each motor reaches their
+    goal, and I have angular damping set to 0, regardless. And I don't believe
+    that Unreal Engine has any air resistance built in, but even if they did,
+    <span class="math">$F_{\\rm D} = \\frac{1}{2}\\rho v^2 C_{\\rm D} A$</span>,
+    meaning that the effect of drag is proportional to the square of the current
+    velocity - this should have the opposite effect of what is observed.
+    <br/><br/>
+    <h1>Can I just ignore all of this?</h1><br/>
+    Surprisingly, maybe! Because there's exactly one feature that I haven't
+    talked about yet...
+    <br/><br/>
+    <img class="aimage" src="images/unreal3.webp">
+    <br/><br/>
+    The "Max Force" is described in the documentation as "The force limit of the
+    drive." Luckily, this force limit is applied at the last step of the motor's
+    internal logic. Once it has already decided on which direction it should
+    move, and done its strange strength calculations, the max force caps the
+    output before it is applied.
+    <br/><br/>
+    Technically, this is exactly what I needed. As long as I can define the
+    target velocity and how much force should be used to reach it, my solution
+    could work. Which is why all of my motors are configured like this...
+    <br/><br/>
+    <div class="imgcenter"><img class="simg" src="images/unreal4.webp"></div>
+    <div class="adesc">The strength is set unreasonably high, so that no matter
+    the size of the target velocity, the output force will be large enough to
+    immediately close the gap between current and target velocity. Then, the max
+    force (which seems pretty large, but 1000 is fairly reasonable for this
+    joint), limits it to a more plausible and less dangerous quantity of force.</div><br/>
+    This isn't an elegant solution. And I think it highlights some serious flaws
+    in Unreal Engine that have gone unaddressed due to this not being within
+    most common/encouraged use cases. But I'm just glad it works, and I can
+    finally move on.
+    <br/><br/>
+    <h1>Blueprints</h1><br/>
+    <div class="math">
+    The first step, upon the scene starting, is storing some data in an array.
+    <br/><br/>
+    <img class="aimage" src="images/unreal5.webp">
+    <br/><br/>
+    The way blueprints do matrix math is somewhat obfuscated: "transforms"
+    are just matrices, with the caveat that they will write matrix
+    multiplications "backwards." When explaining them, I will continue to use
+    column vectors, as is standard with the graphics languages I'm familiar
+    with. This blueprint loops over all of the physics constraints in the arm,
+    and it gets references to the rotating meshes. Given that $M_n(t)$ is the
+    transformation matrix of the mesh at time $t$ and that $J_n(t)$ is the
+    transform of the physics constraint joint, the above code finds
+    $M^{-1}_n(0)J_n(0)$ and saves it in an array under the index $n$. The value
+    being found with this multiplication is the transform from the local space
+    of $J_n$ to the local space of $M_n$, and can be written as $T_{J_n \\to M_n}$.
+    <br/><br/>
+    The reason this is necessary is due to some weird behavior: Physics
+    constraints don't actually move around with the objects they're attached to,
+    instead they apply forces to those objects, based on the offset from their
+    initial positions. So the value I'm determining here is the transform from
+    the local space of $J_n$ to the local space of $M_n$, at the start of the
+    simulation, when everything is correctly lined up, so that as the meshes
+    rotate away from the joints, I can still reference this value.
+    <br/><br/>
+    Next, I call the following code every frame.
+    <br/><br/>
+    <img class="aimage" src="images/unreal6.webp">
+    <br/><br/>
+    This is another loop that iterates over all of the joints, and retrieves the
+    values $M_n(t)$ and $T_{J_n \\to M_n}$.
+    <br/><br/>
+    <img class="aimage" src="images/unreal7.webp">
+    <br/><br/>
+    There's a <em>lot</em> happening here. First, I retrieve the world locations
+    of the end effector ($\\vec e(t)$) and the target position ($\\vec g(t)$).
+    Next, I use those matrices from the previous step to multiply
+    $$
+    (M_n(t)T_{J_n \\to M_n})^{-1} * \\vec e(t) = T_{M_n \\to J_n}M^{-1}_n(t) * \\vec e(t)
+    $$
+    Put simply, this transforms $\\vec e(t)$ from world space into the local
+    space of where the joint would be if it were moved with the mesh itself.
+    Now, any rotations applied to this vector will be applied in the correct
+    way, such that they would imitate the actual rotation of the motor itself.
+    <br/><br/>
+    Next, I generate three rotation matrices and apply them to this vector,
+    before transforming it back into world space. Looking at this process just
+    for the X rotation, we get
+    $$
+    \\begin{split}
+    T_{M_n \\to J_n}M^{-1}_n(t) * \\vec e(t) \\quad & \\text{Transform } \\vec e(t) \\text{ into joint-space} \\\\
+    R_x(\\epsilon) * T_{M_n \\to J_n}M^{-1}_n(t) * \\vec e(t) \\quad & \\text{Rotate by } \\epsilon \\text{ about the x axis} \\\\
+    M_n(t)T_{J_n \\to M_n} * R_x(\\epsilon) * T_{M_n \\to J_n}M^{-1}_n(t) * \\vec e(t) \\quad & \\text{Transform back to world-space}
+    \\end{split}
+    $$
+    These world space values are plugged into a "Get Error" function
+    ($E(\\vec e, \\vec g)$). All this does is return the distance between the
+    input and the target position. I have it in a separate function in case I
+    want to adjust it, however. The last thing I do is subtract that error by
+    the error of the current end effector (before rotations were applied) and
+    divide by the (very small) quantity I rotated by.
+    $$
+    \\lim_{\\epsilon \\to 0} \\frac{\\begin{split}
+      |M_n(t)T_{J_n \\to M_n}R_x(\\epsilon)T_{M_n \\to J_n}M^{-1}_n(t) * \\vec e(t) - \\vec g(t)| \\\\
+      -\\ |\\vec e(t) - \\vec g(t)|
+    \\end{split}}{\\epsilon} = \\frac{\\partial E}{\\partial \\theta_x}
+    $$
+    Doing this for all directions results in three partial derivatives, which
+    can be conceptualized as one vector. Notice that the X and Y derivatives are
+    negative. This is due to quirks in Unreal's physics constraint twist/swing
+    directionality.
+    $$
+    \\begin{pmatrix} -\\frac{\\partial E}{\\partial \\theta_x} \\\\[1ex] -\\frac{\\partial E}{\\partial \\theta_y} \\\\[1ex] \\frac{\\partial E}{\\partial \\theta_z} \\end{pmatrix}
+    $$
+    Don't worry, I'm almost done.
+    <br/><br/>
+    <img class="aimage" src="images/unreal8.webp">
+    <br/><br/>
+    This last part is the simplest. I take that vector of derivatives and apply
+    some smoothing operations. Specifically, I clamp the motors to a reasonable
+    maximum speed, and force the motors to slow when approaching the target.
+    <br/><br/>
+    This value is then directly plugged into the target velocity function, which
+    causes the arm to move each frame.
+    <br/><br/>
+    <h1>Does it work?</h1><br/>
+    <video class="aimage" autoplay playsinline loop muted src="videos/unreal_clip3.mp4"></video>
+    <div class="adesc">Yeah, I think so.</div><br/>
+    It works exactly as I wanted. It seeks out the target point, regardless of
+    whether its possible, it's performant enough to not affect frame time, and
+    it's able to solve difficult and complex IK locations. It does notably
+    wobble a little bit. I've been able to determine this is due to the physics
+    constrint chains, and not my code itself. I'm okay with this, as it's
+    appropriate for my use-case, and happens less when the arms are larger,
+    which is how I intend to use them. When making arms collide with each other,
+    they push each other around as expected, and as I wanted. I've already made
+    improvements beyond what I've discussed in this article, and I think these
+    arms are a great solution to the specific need in my game.
+    <br/><br/>
+    <img class="aimage" src="images/unreal9.webp">
+    <img class="aimage" src="images/unreal10.webp">
     </div>
     `
   },
@@ -1282,7 +1713,7 @@ u();</code></pre>
     moves of that piece are displayed. When that piece is actually moved, it
     adjusts the possibilities to only the pieces that could have made that move.
     <br/><br/>
-    <img class="aimage" src="images/chess_clip0.gif">
+    <video class="aimage" autoplay playsinline loop muted src="videos/chess_clip0.mp4"></video>
     <div class="adesc">Look how whenever a space is hovered-over, the piece
     displayed is the set of all pieces that could have made that move.</div><br/>
     But there's another side to this, which is that the game board still has the
@@ -1388,7 +1819,7 @@ function recalc(p){
     Let's look at that all working together to collapse multiple pieces in a
     single move:
     <br/><br/>
-    <img class="aimage" src="images/chess_clip1.gif">
+    <video class="aimage" autoplay playsinline loop muted src="videos/chess_clip1.mp4"></video>
     <div class="adesc">Notice how white is able to change four of black's pieces
     with this move - by capturing the bottom piece, that piece cannot be the
     King, and therefore must have been the Queen instead. The three pieces
@@ -1530,7 +1961,7 @@ function recalc(p){
     on the screen, <em>without</em> needing to relaunch anything, makes for a
     very smooth experience.
     <br/><br/>
-    <img class="aimage" src="images/lan_clip0.gif">
+    <video class="aimage" autoplay playsinline loop muted src="videos/lan_clip0.mp4"></video>
     <div class="adesc">Realtime updating of controllers doesn't actually provide
     much benefit - but it's fun.</div><br/>
     I've mentioned the Python server a few times, but I haven't explained it
@@ -2095,13 +2526,13 @@ console.log("\\n\\x1b[92mReady!\\x1b[0m");</code></pre><br/>
     The lizards function as a simple three-state state machine, and have these
     behaviors, even when offscreen.
     <br/><br/><h1></h1><br/>
-    <img class="aimage" src="images/lizards_clip0.gif">
+    <video class="aimage" autoplay playsinline loop muted src="videos/lizards_clip0.mp4"></video>
     <br/><br/>
     <h3>Wander</h3><br/>
     This is the default behavior of the lizards. They zig-zag at a slow speed,
     and if they hit a wall, they turn around. Their movement ignores the player.
     <br/><br/><h1></h1><br/>
-    <img class="aimage" src="images/lizards_clip1.gif">
+    <video class="aimage" autoplay playsinline loop muted src="videos/lizards_clip1.mp4"></video>
     <br/><br/>
     <h3>Flee</h3><br/>
     I'm a believer in significant randomness being essential for a convincing
@@ -2120,7 +2551,7 @@ console.log("\\n\\x1b[92mReady!\\x1b[0m");</code></pre><br/>
     from the lizards' point of view. Once the lizard reaches an acceptable
     distance, usually off the screen, the lizard returns to wander mode.
     <br/><br/><h1></h1><br/>
-    <img class="aimage" src="images/lizards_clip2.gif">
+    <video class="aimage" autoplay playsinline loop muted src="videos/lizards_clip2.mp4"></video>
     <br/><br/>
     <h3>Attack</h3><br/>
     The attack strategy is another very probabalistic behavior, and can be
@@ -2389,7 +2820,7 @@ for(var i = 0; i < nd.length; i++){
     ground by a small, stair-sized, amount, and if so, it snaps the player down.
     Together, these makes stairs feel natural both up and down.
     <br/><br/>
-    <img class="aimage" src="images/amogus_clip0.gif">
+    <video class="aimage" autoplay playsinline loop muted src="videos/amogus_clip0.mp4"></video>
     <br/><br/>
     There are multiple light sources in the game, most of them have no shadow to
     save on GPU resources, but the lights in the big room all cast detailed
@@ -2495,7 +2926,7 @@ for(var i = 0; i < nd.length; i++){
     intentionally cuts a lot of corners in order to make this all work, but
     isn't that the whole point of game development?
     <br/><br/>
-    <div class="imgcenter"><img class="simg" src="images/invaders_clip0.gif"></div>
+    <div class="imgcenter"><video class="simg" autoplay playsinline loop muted src="videos/invaders_clip0.mp4"></video></div>
     <div class="adesc">Okay, this GIF doesn't really show anything about the
     game that wouldn't be clear just by playing it - but did you see me use an
     invader as a shield at the start? That was sick.</div><br/>
@@ -2756,7 +3187,8 @@ const tags_defs = {
   "WebSocket": "#ff6600",
   "Blender": "#e87d0d",
   "Godot": "#478cbf",
-  "GLSL": "#5586a4"
+  "GLSL": "#5586a4",
+  "Unreal": "#c83d1e",
 };
 
 function getColor(s){
@@ -2828,7 +3260,11 @@ function renderProjects(tagSearch){
     `;
     pm.onclick = () => {
       document.getElementById("articletext").innerHTML = proj.article;
-      hljs.highlightAll();
+      if (typeof hljs !== "undefined")
+        hljs.highlightAll();
+
+      if(typeof renderMathInElement !== "undefined" && renderMathInElement)
+        Array.from(document.getElementsByClassName('math')).forEach(m => renderMathInElement(m, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]}))
 
       document.getElementById("alink").style.display = proj.link ? "" : "none";
       document.getElementById("alink").onclick = () => {
@@ -2866,7 +3302,7 @@ function renderProjects(tagSearch){
     let sorry = document.createElement("DIV");
     sorry.innerHTML = "I haven't posted about any projects I've made with that on here...";
     sorry.id = "sorry";
-    sorry.className = "text";
+    sorry.className = "subttext";
     document.getElementById("pcont").appendChild(sorry);
   }
 }
@@ -2882,7 +3318,7 @@ function swap(id){
   <body>
     <div class="slide one">
       <div class="title">Johnny Chabin</div>
-      <div class="text">Software Developer, Game Developer,<br/>Occasionally an Artist</div>
+      <div class="subttext">Software Developer, Game Developer,<br/>Occasionally an Artist</div>
       <div class="buttonscont">
         <div class="button clickable" onclick="resume()">Resume</div><br/>
         <div class="button clickable" style="position: relative; z-index: 1;" onclick="toggleSkills()">Skills</div>

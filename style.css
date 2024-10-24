@@ -1,16 +1,13 @@
 :root {
   --accent1: #FF8470;
 }
-*{
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-}
 html{
   background: black;
 }
 body{
   cursor: none;
+  overflow: hidden;
+  margin: 0;
 }
 .cursor{
   border: 3px solid white;
@@ -91,7 +88,7 @@ body{
   z-index: 2;
   position: relative;
 }
-.text{
+.subttext{
   font-family: Roboto, sans-serif;
   font-size: 26px;
   color: #AAA;
@@ -191,6 +188,7 @@ body{
   border-radius: 4px;
 }
 p{
+  margin: 0;
   margin-bottom: 20px;
 }
 p:last-child{
@@ -307,6 +305,9 @@ p:last-child{
   vertical-align: middle;
   color: black;
 }
+.tag.clickable{
+  cursor: none;
+}
 .tag:hover{
   border: 2px solid white;
   margin: 0;
@@ -355,6 +356,7 @@ a{
   width: 100%;
 }
 .simg{
+  margin: 0;
   max-width: 100%;
   border-left: 4px solid #080808;
   border-right: 4px solid #080808;
@@ -374,6 +376,7 @@ a{
   overflow: visible;
   background: #080808;
   transform: translateY(-50px);
+  z-index: 5;
 }
 .amc{
   display: inline-block;
@@ -389,6 +392,7 @@ a{
   margin: 4px;
   transition: transform .2s;
   cursor: pointer;
+  overflow: hidden;
 }
 .amc:hover{
   transform: scale(1.2);
@@ -415,15 +419,20 @@ a{
   color: #888;
   font-style: italic;
 }
+h3{
+  margin: 0;
+}
 h1{
+  margin: 0;
   border-bottom: 2px solid white;
   overflow: visible;
 }
 code{
   font-size: 16px;
 }
-ul{
-  padding-left: 25px;
+ul, ol{
+  margin: 0;
+  padding-inline-start: 35px;
 }
 li{
   overflow: visible;
@@ -493,14 +502,14 @@ li::marker {
   background: var(--accent1);
 }
 #skillspanel{
-  display: inline-block;
+  display: block;
   font-size: 20px;
   transform: translateX(calc(-10px - 100%));
   font-family: Roboto, sans-serif;
   color: black;
   vertical-align: middle;
   max-height: 0;
-  width: 100%;
+  width: 50%;
   transition: transform .5s, max-height .5s, max-width .5s;
   line-height: 1;
 }
@@ -529,4 +538,12 @@ li::marker {
   text-align: center;
   color: #222;
   margin-top: 30vmin;
+}
+.katex-display{
+  overflow-x: auto;
+  overflow-y: hidden;
+  margin: 2em 0 !important;
+}
+pre{
+  margin: 0;
 }

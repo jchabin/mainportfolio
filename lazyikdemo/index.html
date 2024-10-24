@@ -1,0 +1,25 @@
+<style>
+  *{
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  }
+  #c{
+  max-height: 100%;
+  max-width: 100%;
+  }
+  #menu{
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+</style>
+<canvas id="c"></canvas>
+<script src="script.js"></script>
+<div id="menu">
+  <button onclick="togglePause()" id="playpause">Play</button>
+  <br/>
+  <button onclick="newArm()">Randomize Arm</button>
+  <br/>
+  <button onclick="newTarget()">Randomize Target</button>
+</div>

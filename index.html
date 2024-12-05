@@ -72,7 +72,7 @@
     bgStyle.innerHTML = `
       .slide.one{
         background-image: url("images/${selectedBG.src}");
-        ${selectedBG.center ? "background-position: center" : ""}
+        ${selectedBG.center ? "background-position: center;" : ""}
       }
       :root {
         --accent1: ${selectedBG.accent};
@@ -93,6 +93,9 @@
         .button:hover {
           background: white !important;
           color: var(--accent1) !important;
+        }
+        .invertlight {
+          filter: invert(1);
         }
         ` : ""}
     `;
@@ -1983,7 +1986,7 @@ function recalc(p){
     off, though.
     <br/><br/>
     <h1>Architecture</h1>
-    <img class="aimage" src="images/lan_diagram.webp"><br/>
+    <img class="invertlight aimage" src="images/lan_diagram.webp"><br/>
     The main part of this project is a NodeJS express server. I use this to
     serve both the controller page, and the settings page, on separate ports.
     This NodeJS server also hosts the WebSocket servers, to be connected to by

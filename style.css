@@ -1,8 +1,5 @@
-:root {
-  --accent1: #FF8470;
-}
 html{
-  background: black;
+  background: var(--bg);
   overflow: hidden;
 }
 body{
@@ -76,9 +73,6 @@ body{
   height: 100vh;
   background-size: cover;
   background-position: left;
-}
-.slide.one{
-  background-image: url("images/mainbg.webp");
 }
 .title{
   font-family: Inter, sans-serif;
@@ -242,7 +236,7 @@ p:last-child{
   left: 0;
   height: 100vh;
   width: 100vw;
-  background: black;
+  background: var(--bg);
   transition: top .5s;
   z-index: 3;
   overflow-y: scroll;
@@ -268,7 +262,7 @@ p:last-child{
   border-radius: 10px;
   width: 100%;
   transition: transform .2s;
-  background: #080808;
+  background: var(--tile);
   cursor: pointer;
 }
 .pm:hover{
@@ -281,12 +275,12 @@ p:last-child{
 .ph{
   font-family: Roboto, sans-serif;
   font-size: 26px;
-  color: white;
+  color: var(--text);
 }
 .pd{
   font-family: Roboto, sans-serif;
   font-size: 24px;
-  color: #AAA;
+  color: var(--subtext);
 }
 .hidden{
   display: none;
@@ -310,7 +304,7 @@ p:last-child{
   cursor: none;
 }
 .tag:hover{
-  border: 2px solid white;
+  border: 2px solid var(--text);
   margin: 0;
 }
 .column{
@@ -327,7 +321,7 @@ p:last-child{
   position: fixed;
   top: 100vh;
   transition: top .5s;
-  background: black;
+  background: var(--bg);
   z-index: 4;
   cursor: auto;
 }
@@ -343,8 +337,8 @@ p:last-child{
   top: 0;
   height: 100vh;
   overflow-y: scroll;
-  background: #080808;
-  color: white;
+  background: var(--tile);
+  color: var(--text);
   font-family: Roboto, sans-serif;
   font-size: 24px;
 }
@@ -359,13 +353,13 @@ a{
 .simg{
   margin: 0;
   max-width: 100%;
-  border-left: 4px solid #080808;
-  border-right: 4px solid #080808;
+  border-left: 4px solid var(--tile);
+  border-right: 4px solid var(--tile);
   vertical-align: middle;
 }
 .imgcenter{
   text-align: center;
-  background: black;
+  background: var(--bg);
 }
 #articlecontrols{
   position: fixed;
@@ -375,7 +369,7 @@ a{
   right: calc(46px + 50vw - min(50vw, 600px));
   border-radius: 0 0 0 20px;
   overflow: visible;
-  background: #080808;
+  background: var(--tile);
   transform: translateY(-50px);
   z-index: 5;
 }
@@ -389,7 +383,7 @@ a{
   font-family: Roboto, sans-serif;
   font-size: 20px;
   line-height: 40px;
-  color: white;
+  color: var(--text);
   margin: 4px;
   transition: transform .2s;
   cursor: pointer;
@@ -411,7 +405,7 @@ a{
   margin-right: 30px;
 }
 .amc.close{
-  color: #AAA;
+  color: var(--subtext);
   box-sizing: border-box;
   text-align: center;
   font-size: 50px;
@@ -425,7 +419,7 @@ h3{
 }
 h1{
   margin: 0;
-  border-bottom: 2px solid white;
+  border-bottom: 2px solid var(--text);
   overflow: visible;
 }
 code{
@@ -440,7 +434,7 @@ li{
   margin-bottom: 1em;
 }
 li::marker {
-  color: white;
+  color: var(--text);
 }
 .ayt{
   width: 100%;
@@ -449,7 +443,7 @@ li::marker {
 #searchtag{
   font-family: Roboto, sans-serif;
   font-size: 24px;
-  color: #AAA;
+  color: var(--subtext);
   text-align: left;
   padding: 2vmin;
   padding-top: 0;
@@ -460,7 +454,7 @@ li::marker {
   width: 24px;
   margin-left: 15px;
   vertical-align: middle;
-  transform: translateY(-1px) scale(1.5);
+  transform: translateY(-2px) scale(1.5);
   line-height: 24px;
   text-align: center;
   font-size: 16px;
@@ -471,7 +465,7 @@ li::marker {
 }
 .amath{
   font-family: monospace;
-  background: black;
+  background: var(--bg);
   display: inline-block;
   padding: 0 3px 0 3px;
   border-radius: 4px;
@@ -480,7 +474,7 @@ li::marker {
   transform: translateY(-2px);
 }
 .aquote{
-  background: #222;
+  background: var(--quotebox);
   padding: 20px;
   font-style: italic;
 }
@@ -499,7 +493,7 @@ li::marker {
   border: 5px solid var(--accent1);
 }
 #cproj:hover{
-  color: #080808;
+  color: var(--bg);
   background: var(--accent1);
 }
 #skillspanel{
@@ -537,7 +531,7 @@ li::marker {
 }
 #sorry{
   text-align: center;
-  color: #222;
+  color: var(--subtext);
   margin-top: 30vmin;
 }
 .katex-display{

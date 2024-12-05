@@ -20,10 +20,101 @@
         unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
       }
     </style>
+    <script>
+    const BGs = [
+      {
+        src: "mainbg0.webp",
+        accent: "#FF8470",
+        light: false
+      },
+      {
+        src: "mainbg1.webp",
+        // accent: "#6EFE64",
+        // accent: "#217A1F",
+        accent: "#58EA4f",
+        light: true
+      },
+      // {
+      //   src: "mainbg2.webp",
+      //   accent: "#D81391",
+      //   light: true
+      // },
+      {
+        src: "mainbg3.webp",
+        accent: "#D55865",
+        light: false
+      },
+      {
+        src: "mainbg4.webp",
+        accent: "#F77A4D",
+        light: true
+      },
+      {
+        src: "mainbg5.webp",
+        accent: "#FFF",
+        center: true,
+        light: false
+      },
+      {
+        src: "mainbg6.webp",
+        accent: "#DB898A",
+        light: true
+      }
+      // {
+      //   src: "mainbg7.webp",
+      //   accent: "#FFD46A",
+      //   light: true
+      // }
+    ];
+
+    const selectedBG = BGs[Math.floor(Math.random() * BGs.length)];
+    let bgStyle = document.createElement("STYLE");
+    bgStyle.innerHTML = `
+      .slide.one{
+        background-image: url("images/${selectedBG.src}");
+        ${selectedBG.center ? "background-position: center" : ""}
+      }
+      :root {
+        --accent1: ${selectedBG.accent};
+        --text: ${selectedBG.light ? "black" : "white"};
+        --subtext: ${selectedBG.light ? "#888" : "#AAA"};
+        --bg: ${selectedBG.light ? "#EEE" : "black"};
+        --tile: ${selectedBG.light ? "white" : "#080808"};
+        --quotebox: ${selectedBG.light ? "#EEE" : "#222"};
+      }
+      ${selectedBG.light ? `
+        .amc.git {
+          filter: invert(1);
+        }
+        .button {
+          background: var(--accent1) !important;
+          color: var(--text) !important;
+        }
+        .button:hover {
+          background: white !important;
+          color: var(--accent1) !important;
+        }
+        ` : ""}
+    `;
+    // + selectedBG.light ? `
+    //
+    // ` : "";
+    document.head.appendChild(bgStyle);
+
+    let bgLink = document.createElement("LINK");
+    bgLink.rel = "stylesheet";
+    bgLink.href = selectedBG.light ?
+      "highlight/stackoverflow-light.min.css" :
+      "highlight/sunburst.min.css";
+
+    document.head.prepend(bgLink);
+    console.log(bgLink);
+    </script>
     <link rel="stylesheet" href="style.css">
     <style id="mobilestyle">
       .title{
         font-size: 80px;
+        mix-blend-mode: initial;
       }
       .ptitle{
         font-size: 60px;
@@ -92,10 +183,11 @@
         border: 2.5px solid white;
       }
       #skillspanel{
-        width: 100%;
+        width: calc(100% - 20px);
       }
     </style>
-    <link rel="stylesheet" href="highlight/sunburst.min.css">
+    <!-- <link rel="stylesheet" href="highlight/sunburst.min.css">
+    <link rel="stylesheet" href="highlight/stackoverflow-light.min.css"> -->
     <script async src="highlight/highlight.min.js" onload="hljs.highlightAll()"></script>
 
 

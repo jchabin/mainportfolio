@@ -58,16 +58,32 @@
       {
         src: "mainbg6.webp",
         accent: "#DB898A",
-        light: true
-      }
+        light: true,
+        nomobile: true
+      },
       // {
       //   src: "mainbg7.webp",
       //   accent: "#FFD46A",
       //   light: true
-      // }
+      // },
+      {
+        src: "mainbg8.webp",
+        accent: "#668CFF",
+        light: false
+      },
+      {
+        src: "mainbg9.webp",
+        accent: "#70C3FF",
+        light: false,
+        nomobile: true
+      }
     ];
 
-    const selectedBG = BGs[Math.floor(Math.random() * BGs.length)];
+    var mobile = navigator.userAgent.match("Mobile")!=null||navigator.userAgent.match("Linux;")!=null;
+
+    var selectedBG;
+    while(!selectedBG || (mobile && selectedBG.nomobile))
+      selectedBG = BGs[Math.floor(Math.random() * BGs.length)];
     let bgStyle = document.createElement("STYLE");
     bgStyle.innerHTML = `
       .slide.one{
@@ -3476,7 +3492,6 @@ function swap(id){
       </div>
     </div>
     <script>
-      var mobile = navigator.userAgent.match("Mobile")!=null||navigator.userAgent.match("Linux;")!=null;
       document.getElementById("mobilestyle").disabled = !mobile;
 
       var tagSearch = -1;

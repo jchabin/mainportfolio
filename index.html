@@ -75,7 +75,8 @@
         src: "mainbg9.webp",
         accent: "#70C3FF",
         light: false,
-        nomobile: true
+        nomobile: true,
+        hl: true
       }
     ];
 
@@ -112,6 +113,11 @@
         }
         .invertlight {
           filter: invert(1);
+        }
+        ` : ""}
+      ${selectedBG.hl ? `
+        .phl {
+          background: black;
         }
         ` : ""}
     `;
@@ -3429,7 +3435,7 @@ function swap(id){
   <body>
     <div class="slide one">
       <div class="title">Johnny Chabin</div>
-      <div class="subttext">Software Developer, Game Developer,<br/>Occasionally an Artist</div>
+      <div class="subttext"><span class="phl">Software Developer, Game Developer,</span><br/><span class="phl">Occasionally an Artist</span></div>
       <div class="buttonscont">
         <div class="button clickable" onclick="resume()">Resume</div><br/>
         <div class="button clickable" style="position: relative; z-index: 1;" onclick="toggleSkills()">Skills</div>

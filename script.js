@@ -99,7 +99,7 @@ window.onmousemove = (e) => {
 function update(){
   requestAnimationFrame(update);
   if(!mobile){
-    document.getElementById("articlecontrols").style.paddingTop = Math.floor(Math.max(5, 54 - document.getElementById("article").scrollTop)) + "px";
+    document.getElementById("articlecontrols").style.paddingTop = Math.floor(Math.max(5, 53 - document.getElementById("article").scrollTop)) + "px";
 
     let dx = trail[0].x - mouse.x, dy = trail[0].y - mouse.y;
 

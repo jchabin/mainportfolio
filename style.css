@@ -542,3 +542,8 @@ li::marker {
 pre{
   margin: 0;
 }
+.lightdark{
+  display: none;
+  height: 22px;
+  transform: scale(1.2);
+}

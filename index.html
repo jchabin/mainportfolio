@@ -75,65 +75,75 @@
         src: "mainbg9.webp",
         accent: "#70C3FF",
         light: false,
-        nomobile: true,
         hl: true
       }
     ];
 
     var mobile = navigator.userAgent.match("Mobile")!=null||navigator.userAgent.match("Linux;")!=null;
 
-    var selectedBG;
-    while(!selectedBG || (mobile && selectedBG.nomobile))
-      selectedBG = BGs[Math.floor(Math.random() * BGs.length)];
-    let bgStyle = document.createElement("STYLE");
-    bgStyle.innerHTML = `
-      .slide.one{
-        background-image: url("images/${selectedBG.src}");
-        ${selectedBG.center ? "background-position: center;" : ""}
-      }
-      :root {
-        --accent1: ${selectedBG.accent};
-        --text: ${selectedBG.light ? "black" : "white"};
-        --subtext: ${selectedBG.light ? "#888" : "#AAA"};
-        --bg: ${selectedBG.light ? "#EEE" : "black"};
-        --tile: ${selectedBG.light ? "white" : "#080808"};
-        --quotebox: ${selectedBG.light ? "#EEE" : "#222"};
-      }
-      ${selectedBG.light ? `
-        .amc.git {
-          filter: invert(1);
-        }
-        .button {
-          background: var(--accent1) !important;
-          color: var(--text) !important;
-        }
-        .button:hover {
-          background: white !important;
-          color: var(--accent1) !important;
-        }
-        .invertlight {
-          filter: invert(1);
-        }
-        ` : ""}
-      ${selectedBG.hl ? `
-        .phl {
-          background: black;
-        }
-        ` : ""}
-    `;
-    // + selectedBG.light ? `
-    //
-    // ` : "";
-    document.head.appendChild(bgStyle);
+    var lightMode, selectedBG, bgStyle, bgLink;
 
-    let bgLink = document.createElement("LINK");
-    bgLink.rel = "stylesheet";
-    bgLink.href = selectedBG.light ?
-      "highlight/stackoverflow-light.min.css" :
-      "highlight/sunburst.min.css";
+    function updateBG() {
+      lightMode = localStorage.getItem("lightMode") == "true";
 
-    document.head.prepend(bgLink);
-    console.log(bgLink);
+      if(selectedBG) selectedBG = 0;
+      if(bgStyle) bgStyle.remove();
+      if(bgLink) bgLink.remove();
+
+      while(!selectedBG || (mobile && selectedBG.nomobile) || (lightMode ^ selectedBG.light))
+        selectedBG = BGs[Math.floor(Math.random() * BGs.length)];
+      bgStyle = document.createElement("STYLE");
+      bgStyle.innerHTML = `
+        .slide.one{
+          background-image: url("images/${selectedBG.src}");
+          ${selectedBG.center ? "background-position: center;" : ""}
+        }
+        :root {
+          --accent1: ${selectedBG.accent};
+          --text: ${selectedBG.light ? "black" : "white"};
+          --subtext: ${selectedBG.light ? "#888" : "#AAA"};
+          --bg: ${selectedBG.light ? "#EEE" : "black"};
+          --tile: ${selectedBG.light ? "white" : "#080808"};
+          --quotebox: ${selectedBG.light ? "#EEE" : "#222"};
+        }
+        ${selectedBG.light ? `
+          .amc.git {
+            filter: invert(1);
+          }
+          .button {
+            background: var(--accent1) !important;
+            color: var(--text) !important;
+          }
+          .button:hover {
+            background: white !important;
+            color: var(--accent1) !important;
+          }
+          .invertlight {
+            filter: invert(1);
+          }
+          ` : ""}
+        ${selectedBG.hl ? `
+          .phl {
+            background: black;
+          }
+          ` : ""}
+        #${lightMode ? "sunsvg" : "moonsvg"} {
+          display: block;
+        }
+      `;
+      document.head.appendChild(bgStyle);
+
+      bgLink = document.createElement("LINK");
+      bgLink.rel = "stylesheet";
+      bgLink.href = selectedBG.light ?
+        "highlight/stackoverflow-light.min.css" :
+        "highlight/sunburst.min.css";
+
+      document.head.prepend(bgLink);
+      console.log(bgLink);
+    }
+
+    updateBG();
     </script>
     <link rel="stylesheet" href="style.css">
     <style id="mobilestyle">
@@ -3440,7 +3450,11 @@ function swap(id){
         <div class="button clickable" onclick="resume()">Resume</div><br/>
         <div class="button clickable" style="position: relative; z-index: 1;" onclick="toggleSkills()">Skills</div>
         <div id="skillspanel"></div><br/>
-        <div class="button clickable" onclick="projects()">Projects</div>
+        <div class="button clickable" onclick="projects()">Projects</div><br/>
+        <div class="button clickable" onclick="localStorage.setItem('lightMode', 'true' != localStorage.getItem('lightMode'));updateBG()">
+          <svg id="sunsvg" class="lightdark" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-sun"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+          <svg id="moonsvg" class="lightdark" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-moon"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        </div>
       </div>
       <div id="bio">
         <!-- <div class="iconcont">

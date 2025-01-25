@@ -299,6 +299,7 @@ p:last-child{
   display: inline-block;
   vertical-align: middle;
   color: black;
+  overflow: hidden;
 }
 .tag.clickable{
   cursor: none;
@@ -454,7 +455,7 @@ li::marker {
   width: 24px;
   margin-left: 15px;
   vertical-align: middle;
-  transform: translateY(-2px) scale(1.5);
+  transform: translateY(-1px) scale(1.5);
   line-height: 24px;
   text-align: center;
   font-size: 16px;

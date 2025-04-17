@@ -1,0 +1,11 @@
+<script>
+(async ()=>{
+  var b=0,t=await (await fetch("MIN")).bytes(),o="";
+  for(var i = 0; b < t.length * 8; b += 7) {
+  var c1 = t[Math.floor(b / 8)], c2 = t[Math.ceil(b / 8)];
+  // console.log((c1 << (b % 8)) & 0x7f, (c2 >> (8 - b % 8)) & 0x7f, ((c1 << (b % 8)) | (c2 >> (8 - b % 8))) & 0x7f);
+  o += String.fromCharCode(((c1 << (b % 8)) | (c2 >> (8 - b % 8))) & 0x7f);
+  }
+  document.body.append(document.createRange().createContextualFragment(o));
+})();
+</script>

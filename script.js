@@ -93,7 +93,14 @@ window.onmousemove = (e) => {
     update();
   }
   chainTrail();
-  trail[0].elem.className = "cursor" + (e.target.classList.contains("clickable") ? " hover" : "");
+
+  let hTarget = e.target, isClickable = false;
+  while(hTarget.parentNode && !isClickable) {
+    isClickable = hTarget.classList.contains("clickable");
+    hTarget = hTarget.parentNode;
+  }
+
+  trail[0].elem.className = "cursor" + (isClickable ? " hover" : "");
 }
 
 function update(){
